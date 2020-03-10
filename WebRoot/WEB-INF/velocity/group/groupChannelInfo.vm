@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+<div class="topline">
+	<a href="$!{ctx}/groupChannel/findGroupChannel.do" class="wxbtn">用户组频道信息列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF">#if($!{groupChannel.id}==""|| !$!{groupChannel.id})增加用户组频道信息#else 修改用户组频道信息#end</a>
+</div>	
+<form id="form0" name="form0" action="" method="post" >
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" id="needset" style="border:1px solid #cfcfcf;background:#ffffff;">
+    <tr>
+        <td colspan="2">
+			<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<input type="hidden" id="id"  name="id" value="$!{groupChannel.id}"/>
+						<input type="hidden" id="status"  name="status" value="$!{groupChannel.status}"/>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">
+							所属运营商
+							</td>
+							<td class="pn-fcontent">
+								<select name="operators" id="operators" style="width:130px;" onchange="changeOperators(this, 'groupCode', 'ochannelId');">
+                   					<option value="" >=请选择=</option>
+                   					#foreach($o in $olist)
+           								<option value="${o.code}" #if (${o.code} == $!{groupChannel.operators}) selected #end>${o.name}</option>
+           							#end
+           						</select>
+   								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">
+							所属用户组
+							</td>
+							<td class="pn-fcontent">
+								<select name="groupCode" id="groupCode" style="width:130px;" >
+                  					<option value="" >=请选择=</option>
+                  					#foreach($o in $ugList)
+          								<option value="${o.groupCode}" #if (${o.groupCode} == $!{groupChannel.groupCode}) selected #end>${o.groupName}</option>
+          							#end
+          						</select>
+  								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">
+							运营商频道
+							</td>
+							<td class="pn-fcontent">
+								<select name="ochannelId" id="ochannelId" style="width:130px;">
+                  					<option value="" >=请选择=</option>
+                  					#foreach($o in $ocList)
+          								<option value="${o.id}" #if (${o.id} == $!{groupChannel.ochannelId}) selected #end>$!{o.channelName}</option>
+          							#end
+          						</select>
+  								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">
+							频道名称
+							</td>
+							<td class="pn-fcontent">
+								<input type="text" id="channelName"  name="channelName" value="$!{groupChannel.channelName}" />
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">
+							频道号
+							</td>
+							<td class="pn-fcontent">
+								<input type="text" id="localCid"  name="localCid" value="$!{groupChannel.localCid}" />
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">
+							排序
+							</td>
+							<td class="pn-fcontent">
+								<input type="text" id="sequence"  name="sequence" value="$!{groupChannel.sequence}" />
+								<em class="required">*</em>
+							</td>
+						</tr>
+			</table>
+		</td>
+    </tr>
+   <tr>
+    <td width="17%">&nbsp;</td>
+    <td width="83%">
+		<button type="button" id="save-btn" class="bt-primary">保存</button>
+		<button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+<script type="text/javascript" src="${ctx}/js/ott/group/groupChannelInfo.js"></script>
+</body>
+</html>

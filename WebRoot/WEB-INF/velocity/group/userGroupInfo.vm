@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="content-type" content="text/html; charset=UTF-8">
+	#tagLibs()
+</head>
+<body>
+<div class="topline" style="margin:8px">
+	<a href="${ctx}/group/findUserGroup.do" class="wxbtn" >用户组列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF">#if($!{usergroup.id}=="" || !${usergroup.id})增加用户组  #else 修改用户组 #end</a>
+</div>
+<form id="form0" name="form0" action="" method="post" >
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" id="needset" style="border:1px solid #cfcfcf;background:#ffffff;">
+    <tr>
+        <td colspan="2">
+			<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">
+							所属运营商
+							</td>
+							<td class="pn-fcontent">
+								<select name="operators" id="operators" style="width:130px;" onchange="changeGroupChannel(this,'opChannel');">
+                   					<option value="" >=请选择=</option>
+                   					#foreach($o in $olist)
+           								<option value="${o.code}" #if (${o.code} == $!{usergroup.operators}) selected #end>${o.name}</option>
+           							#end
+           						</select>
+   								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">
+							用户组名称
+							</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id"  name="id" value="$!{usergroup.id}" />
+								<input type="hidden" id="status"  name="status" value="$!{usergroup.status}" />
+								<input type="text" id="groupName"  name="groupName" value="$!{usergroup.groupName}" />
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">
+							用户组编码
+							</td>
+							<td class="pn-fcontent">
+								<input type="text" id="groupCode"  name="groupCode" value="$!{usergroup.groupCode}" />
+							</td>
+						</tr>
+						#if($!{usergroup.id}=="" || !${usergroup.id})
+							<tr>
+								<td width="20%" class="pn-flabel pn-flabel-h">
+									用户组频道
+								</td>
+								<td class="pn-fcontent">
+									<div id="opChannel"></div>
+									<input type="checkbox" id="all_code" /><label for="all_code" class="bt-standout" id="all_code_label">勾选所有</label>
+									<input type="hidden" id="groupChannels"  name="groupChannels" />
+								</td>
+							</tr>
+						#end
+			</table>
+		</td>
+    </tr>
+   <tr>
+    <td width="17%">&nbsp;</td>
+    <td width="83%">
+		<button type="button" id="save-btn" class="bt-primary">保存</button>
+		<button type="button" onClick="history.go(-1)" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/group/userGroupInfo.js"></script>
+</body>
+</html>

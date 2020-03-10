@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.market.mapper.CustomerMapper">
+	<resultMap id="CustomerMap" type="Customer">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="customerName" property="customerName" jdbcType="VARCHAR" />
+		<result column="customerNo" property="customerNo" jdbcType="VARCHAR" />
+		<result column="headUrl" property="headUrl" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<insert id="addCustomer" parameterType="Customer">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_Customer(customerName,customerNo,headUrl,type,status)
+				VALUES(
+				#{customerName,jdbcType=VARCHAR},
+				#{customerNo,jdbcType=VARCHAR},
+				#{headUrl,jdbcType=VARCHAR},
+				#{type,jdbcType=VARCHAR},
+				'1'
+				) 
+	</insert>
+
+	<!--分页查询客服 -->
+	<select id="findCustomerByPage" resultMap="CustomerMap">
+		select id,customerName,customerNo,headUrl,type,status
+		from OTT_Customer
+		<where>
+			<if test="customerName != null and customerName != ''">
+				customerName= #{customerName,jdbcType=VARCHAR}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				and customerNo= #{customerNo,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+				and type= #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+	<select id="getCountCustomer" resultType="int">
+		select count(1)
+		from OTT_Customer 
+		<where>
+			<if test="customerName != null and customerName != ''">
+				customerName= #{customerName,jdbcType=VARCHAR}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				and customerNo= #{customerNo,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+				and type= #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getCustomerById" resultMap="CustomerMap">
+		<![CDATA[ 
+			select * from OTT_Customer where id=#{id}
+		]]>
+	</select>
+
+	<!-- 修改客服信息-->
+	<update id="updateCustomer" parameterType="Customer">
+		<![CDATA[ UPDATE OTT_Customer SET 
+				customerName=#{customerName,jdbcType=VARCHAR},
+				customerNo=#{customerNo,jdbcType=VARCHAR},
+				headUrl=#{headUrl,jdbcType=VARCHAR},
+				type=#{type,jdbcType=VARCHAR}
+			where id=#{id}
+		]]>
+	</update>
+
+	<update id="updateCustomerStatus">
+		UPDATE OTT_Customer SET status=#{status,jdbcType=VARCHAR} where id=#{id}
+	</update>
+	
+	<delete id="delCustomerById">
+		delete from OTT_Customer where id=#{id}
+	</delete>
+	
+	<select id="findCustomerByCond" resultMap="CustomerMap">
+		select * from OTT_Customer
+		<where>
+			<if test="customerName != null and customerName != ''">
+				customerName= #{customerName,jdbcType=VARCHAR}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				and customerNo= #{customerNo,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+				and type= #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id
+		</if>
+	</select>
+	
+</mapper>

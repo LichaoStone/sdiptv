@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>节目单信息</title>
+#tagLibs()
+#calendar()
+<script type="text/javascript" src="${ctx}/xheditor/xheditor-1.1.14-zh-cn.min.js"></script>
+<script type="text/javascript">
+$(pageInit);
+function pageInit(){
+	var pid= "99999";
+	if($('#editable').val()=="false"){
+		$('#remark').xheditor({tools:'full',skin:'vista',html5Upload: false});
+	}else{
+    	$('#remark').xheditor({tools:'full',skin:'vista',upImgUrl: window.ctx+'/fileupload/productImgUpload.do?flag=img&pid='+pid,upImgExt:'jpg,jpeg,gif,png',html5Upload: false});
+	}
+}
+</script>
+</head>
+<body>
+	<div class="topline">
+	<a href="${ctx}/programs/findPrograms.do" class="wxbtn">节目单列表</a>
+	<a href="#" class="xzbtn" style="color:#FFFFFF">#if($!{p.id}=="" || !${p.id})增加节目  #else 修改节目 #end</a>
+</div>
+<form id="form1" name="form1" action="" method="post" enctype="multipart/form-data">
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="border:1px solid #cfcfcf;background:#ffffff;">
+    <tr>
+      <td colspan="2">
+				<legend>节目单信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">节目名称：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id" name="id" value="$!{p.id}"/>
+								<input type="text" id="name"  name="name" value="$!{p.name}" class="text-writer"/>
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">所属频道：</td>
+							<td class="pn-fcontent">
+								<select id="areaId" name="areaId" style="width:100px;" onchange="changeChannel2(this, 'channelId');">
+                    				<option value="">请选择省份</option>
+                    				#foreach($c in $!channels)
+                    					<option value="$!{c.id}" #if($!{c.id}==$!{p.areaId}) selected #end>$!{c.name}</option>	
+                    				#end
+                                </select>
+                    			<select id="channelId" name="channelId" style="width:140px;">
+                    				#if ($!{p.channelId} !='') 
+                    					#foreach($c in $!csList)
+                    						<option value="$!{c.id}" #if($!{c.id}==$!{p.channelId}) selected #end>$!{c.name}</option>	
+                    					#end
+                    				#end
+                               </select>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">节目全称：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="fullName"  name="fullName" value="$!{p.fullName}" class="text-writer"/>
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">播放时间：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="playTime"  name="playTime" value="$!{p.playTime}" 
+									style="width:140px;" class="text-writer Wdate"  
+									onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" readonly/>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">播放时长：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="timeLongth"  name="timeLongth" value="$!{p.timeLongth}" class="text-writer"/>
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">节目剧集：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="queue"  name="queue" value="$!{p.queue}" class="text-writer" />
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">播放地址：</td>
+							<td class="pn-fcontent" >
+								<input type="text" id="playId"  name="playId" value="$!{p.playId}" class="text-writer"/>
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">基础名称：</td>
+							<td class="pn-fcontent" >
+								<input type="text" id="basicName"  name="basicName" value="$!{p.basicName}" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">可以点播：</td>
+							<td class="pn-fcontent" >
+								#if($!{p.dbPlay}=="1")
+									是
+								#elseif($!{p.dbPlay}=="0")
+									否
+								#end
+							</td>
+							<td width="15%" class="pn-flabel pn-flabel-h">文件服务器地址：</td>
+							<td class="pn-fcontent" >
+								$!{p.sourceServer}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">节目LOGO：</td>
+							<td class="pn-fcontent">
+								<div id="preview">
+									#if(!${p.logoImgUrl}||$!{p.logoImgUrl}=="")
+										<img id="imghead" style="width:230px;height:200px;border:1px;" alt="频道LOGO" src="${ctx}/images/nopic.gif">
+									#else
+										<img id="imghead" style="width:230px;height:200px;border:1px;" alt="频道LOGO" src="${sourceUrl}$!{p.logoImgUrl}">
+									#end
+								</div>
+							   <input type="hidden" id="logoImgUrl"  name="logoImgUrl" value="$!{p.logoImgUrl}"/>
+								<input type="file" id="logoFile" name="logoFile" value="上传" class="text-writer7"/>&nbsp;&nbsp;
+								<button type="button" id="saveLogoImg" style="width:100px;" class="bt-primary">上传</button>
+							</td>
+								<div id="uploadImg" style="display:none;height:15px; width:15px; margin:15px auto;">
+                            			<img src="${ctx}/images/loadinglit.gif"/>
+                            	</div>
+                                <em id="top-message" class="top-message" style="display:none;margin-top:20px;"></em>
+							<td width="10%" class="pn-flabel pn-flabel-h">节目简介图：</td>
+							<td class="pn-fcontent">
+								<div id="preview2">
+									#if(!${p.descImgUrl}||$!{p.descImgUrl}=="")
+										<img id="imghead2" style="width:230px;height:200px;border:1px;" alt="节目简介" src="${ctx}/images/nopic.gif">
+									#else
+										<img id="imghead2" style="width:230px;height:200px;border:1px;" alt="节目简介" src="${sourceUrl}$!{p.descImgUrl}">
+									#end
+								</div>
+							   <input type="hidden" id="descImgUrl"  name="descImgUrl" value="$!{p.descImgUrl}"/>
+								<input type="file" id="descImgFile" name="descImgFile" value="上传" class="text-writer7"/>&nbsp;&nbsp;
+								<button type="button" id="saveDescImg" style="width:100px;" class="bt-primary">上传</button>
+							</td>
+						</tr> 
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">简介说明：</td>
+							<td class="pn-fcontent" colspan="3">
+								<textarea id="remark" name="remark" rows="12" cols="50" style="width:100%">$!{p.remark}</textarea>
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td width="17%">&nbsp;</td>
+    <td width="83%">
+		<button type="button" id="savePrograms" class="bt-primary">保存</button>
+		<button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/ajaxfileupload.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/uploadPreview.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/live/programsInfo.js"></script>
+</body>
+</html>

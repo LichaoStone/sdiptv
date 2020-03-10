@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.ChannelRecoverMapper">
+	<resultMap id="ChannelRecoverMap" type="ChannelRecover" > 
+		<id property="id" column="id"></id>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="recoverTime" column="recoverTime"></result>
+	</resultMap>  
+
+	<insert id="addChannelRecover" parameterType="ChannelRecover">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[ insert into ott_channel_recover(channelId,recoverTime) 
+			values(#{channelId,jdbcType=VARCHAR},
+				now()
+				)
+		]]>
+	</insert> 
+	
+	<select id="findChannelRecoverByPage" resultMap="ChannelRecoverMap">
+		select cr.id, cr.channelId,cr.recoverTime,c.name as channelName
+		from ott_channel_recover cr
+		left outer join ott_channel c on c.id=cr.channelId
+		<where>
+			<if test="channelId !='' and channelId !=null">
+				cr.channelId=#{channelId, jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by cr.id desc
+		</if>
+	</select>
+	<select id="getCountChannelRecover" resultType="int">
+		select count(1)
+		from ott_channel_recover 
+		<where>
+			<if test="channelId !='' and channelId !=null">
+				channelId=#{channelId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findChannelRecover" resultMap="ChannelRecoverMap">
+		select cr.id, cr.channelId,cr.recoverTime
+		from ott_channel_recover cr
+		<where>
+			<if test="channelId !='' and channelId !=null">
+				cr.channelId=#{channelId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryTime !='' and queryTime !=null">
+				and cr.recoverTime BETWEEN DATE_SUB(now(), INTERVAL 1 DAY) and now()
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by cr.id desc
+		</if>
+	</select>
+	
+	<select id="getChannelRecoverByCid" resultMap="ChannelRecoverMap">
+		select * from ott_channel_recover where channelId=#{channelId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateChannelRecover">
+		update ott_channel_recover set recoverTime=now() where channelId=#{channelId,jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="delChannelRecoverList">
+		delete from ott_channel_recover where id in
+		 <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+	
+	
+</mapper>

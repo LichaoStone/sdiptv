@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>热门频道管理</title>
+#tagLibs()
+</head>
+<body>
+<!--  快速转换位置按钮  --> 
+<!--  内容列表   -->
+<form id="queryForm" method="get">
+ <table border='0' cellpadding='0' cellspacing='0' height="36">
+    <tr class="search">
+		<td>热门频道：<input type='text' id="channelName" name='channelName' value='$!{channelLog.channelName}' style="width:180px;"/>
+        </td>
+        <td>
+			<input type="hidden" id="orderColumn" name="orderColumn" value="$!{channelLog.orderColumn}" />
+            <img id="queryHot" type="image" src="${ctx}/images/button_search.gif"/>
+        </td>
+	</tr>
+</table>
+<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+<tr align="left" bgcolor="#eff2f7" height="30">
+	<td width="5%"><input type="checkbox" id="allSelect" style="padding-top:5px;"  onclick="isCheckAll('arcID',this);"><label for="allSelect">全选</label></td>
+	<td width="20%"><a href="javascript:void(0);"  onclick="orderBy(this);" name="channelName" lastOrderBy="$!{channelLog.orderColumn}" class="tb_head">热门频道</a></td>
+    <td width="20%"><a href="javascript:void(0);"  onclick="orderBy(this);" name="channelId" lastOrderBy="$!{channelLog.orderColumn}" class="tb_head">频道编号</a></td>
+    <td width="20%"><a href="javascript:void(0);"  onclick="orderBy(this);" name="realNumber" lastOrderBy="$!{channelLog.orderColumn}" class="tb_head">实际播放值</a></td>
+    <td width="20%"><a href="javascript:void(0);"  onclick="orderBy(this);" name="virtualNumber" lastOrderBy="$!{channelLog.orderColumn}" class="tb_head">干预播放值</a></td>
+	<td width="20%">操作</td>
+</tr>
+#if ($null.isNull($list) || $list.size()==0)
+	<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	 <td colspan="6"><h1>暂无相关数据内容</h1></td>
+    </tr>
+#end
+#foreach ($c in $list)
+<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	<td><input type="checkbox" id="arcID" name="arcID" class="np" value="$!{c.id}"/></td>
+	 <td >$!{c.channelName}</td>
+     <td >$!{c.channelId}</td>
+     <td >$!{c.realNumber}</td>
+     <td >$!{c.virtualNumber}</td>
+	 <td >
+        <a href="javascript:toCNumber(this, '$!{c.virtualNumber}','$!{c.id}');">编辑</a>
+		<a href="javascript:del(this, '$!{c.id}');">删除</a>
+     </td>
+</tr>
+#end
+</table>
+<div height="36" align="left">
+ 	<a href="javascript:void(0);" class="wxbtn" id="delhots">批量删除</a>
+</div>
+<div height="36" align="right">
+    #pagination(${channelLog})
+</div>
+</form>
+<script type="text/javascript" src="${ctx}/js/ott/live/listHot.js"></script>
+</body>
+</html>

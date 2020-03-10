@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.equip.mapper.FeedbackBrandMapper">
+	<resultMap id="FeedbackBrandMap" type="FeedbackBrand">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="hardType" property="hardType" jdbcType="VARCHAR" />
+		<result column="brandName" property="brandName" jdbcType="VARCHAR" />
+		<result column="modelName" property="modelName" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="phoneModel" property="phoneModel" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="feedTime" property="feedTime" />
+		<result column="feedMan" property="feedMan" jdbcType="VARCHAR" />
+		<result column="feedType" property="feedType" jdbcType="VARCHAR" />
+		<result column="feedContent" property="feedContent" jdbcType="VARCHAR" />
+		<result column="transactor" property="transactor" jdbcType="VARCHAR" />
+		<result column="doTime" property="doTime" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 添加反馈 -->
+	<insert id="addFeedbackBrand" parameterType="FeedbackBrand">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_FEEDBACK_BRAND(hardType,brandName,modelName,address,phoneModel,feedTime,feedMan,feedType,feedContent,status)
+				VALUES(
+				#{hardType,jdbcType=VARCHAR},
+				#{brandName,jdbcType=VARCHAR},
+				#{modelName,jdbcType=VARCHAR},
+				#{address,jdbcType=VARCHAR},
+				#{phoneModel,jdbcType=VARCHAR},
+				now(),
+				#{feedMan,jdbcType=VARCHAR},
+				#{feedType,jdbcType=VARCHAR},
+				#{feedContent,jdbcType=VARCHAR},
+				'0'
+				) 
+	</insert>
+	<update id="updateFeedbackBrand" parameterType="FeedbackBrand">
+		<![CDATA[ UPDATE OTT_FEEDBACK_BRAND SET 
+			transactor=#{transactor},
+			remark=#{remark},
+			status=#{status},
+			doTime=now()
+			where id=#{id}
+		]]>
+	</update>
+	
+	<!--分页查询所有反馈 -->
+	<select id="findFeedbackBrandByPage" resultMap="FeedbackBrandMap">
+		select * from OTT_FEEDBACK_BRAND
+		<where>
+			<if test="hardType != null and hardType != ''">
+				hardType= #{hardType,jdbcType=VARCHAR}
+			</if>
+			<if test="brandName != null and brandName != ''">
+				and brandName= #{brandName,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="feedType != null and feedType != ''">
+				and fo.feedType= #{feedType,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+	<select id="getCountFeedbackBrand" resultType="int">
+		select count(1) from OTT_FEEDBACK_BRAND
+		<where>
+			<if test="hardType != null and hardType != ''">
+				hardType= #{hardType,jdbcType=VARCHAR}
+			</if>
+			<if test="brandName != null and brandName != ''">
+				and brandName= #{brandName,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="feedType != null and feedType != ''">
+				and fo.feedType= #{feedType,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getFeedbackBrandById" resultMap="FeedbackBrandMap">
+		<![CDATA[ 
+			select * from OTT_FEEDBACK_BRAND where id=#{id}
+		]]>
+	</select>
+
+	<delete id="delFeedbackBrandById">
+		delete from OTT_FEEDBACK_BRAND where id=#{id}
+	</delete>
+	
+	<delete id="delFeedbackBrandList">
+		delete from OTT_FEEDBACK_BRAND where id in
+	     <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+	
+	<select id="findFeedbackBrandByCond" resultMap="FeedbackBrandMap">
+		select * from OTT_FEEDBACK_BRAND 
+		<where>
+			<if test="hardType != null and hardType != ''">
+				hardType= #{hardType,jdbcType=VARCHAR}
+			</if>
+			<if test="brandName != null and brandName != ''">
+				and brandName= #{brandName,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+</mapper>

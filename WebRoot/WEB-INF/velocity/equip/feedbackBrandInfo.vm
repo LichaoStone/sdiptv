@@ -1,0 +1,129 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>品牌型号反馈信息<</title>
+#tagLibs()
+</head>
+<body>
+<form id="form1" name="form1" action="" method="post">
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="margin-top:13px;">
+      <tr>
+      <td colspan="2">
+				<legend>反馈信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">品牌：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id" name="id" value="$!{feedback.id}"/>
+								$!{feedback.brandName}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">设备类型：</td>
+							<td class="pn-fcontent">
+    							$!{feedback.typeName}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">硬件型号：</td>
+							<td class="pn-fcontent">
+								$!{feedback.modelName}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">手机型号：</td>
+							<td class="pn-fcontent">
+    							$!{feedback.phoneModel}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">反馈人：</td>
+							<td class="pn-fcontent">
+								$!{feedback.feedMan}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">反馈类型：</td>
+							<td class="pn-fcontent">
+								$!{feedback.feedType}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">反馈内容：</td>
+							<td class="pn-fcontent">
+								$!{feedback.feedContent}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">地址：</td>
+							<td class="pn-fcontent">
+								$!{feedback.address}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">反馈时间：</td>
+							<td class="pn-fcontent">
+								$!{feedback.feedTimeStr}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">反馈状态：</td>
+							<td class="pn-fcontent">
+								#if($!{feedback.status}!='2')
+								<select id="status" name="status">
+									#if($!{feedback.status}=='0')
+    									<option value="0" #if($!{feedback.status}=='0') selected #end>未处理</option>
+									#end
+                                    <option value="1" #if($!{feedback.status}=='1') selected #end>处理中</option>
+									<option value="2" #if($!{feedback.status}=='2') selected #end>已处理</option>
+                                </select>
+								#else
+									已处理
+								#end
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">处理描述：</td>
+							<td class="pn-fcontent">
+								#if($!{feedback.status}!='2')
+    								<textarea id="textarea" name="remark" id="remark" rows="5" cols="75">$!{feedback.remark}</textarea>
+								#else
+									$!{feedback.remark}
+								#end
+							</td>
+						</tr>
+						#if($!{feedback.status}!='0')
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">处理人：</td>
+							<td class="pn-fcontent">
+								$!{feedback.transactor}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">处理时间：</td>
+							<td class="pn-fcontent">
+								$!{feedback.doTimeStr}
+							</td>
+						</tr>
+						#end
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td width="10%">&nbsp;</td>
+    <td width="90%">
+	#if($!{feedback.status}!='2')
+		<button type="button" id="saveFeedback" class="bt-primary">保存</button>
+   #end
+		<button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ott/equip/feedbackBrand.js"></script>
+</body>
+</html>

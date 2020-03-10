@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.common.mapper.DictionaryMapper">
+	<resultMap id="DictionaryMap" type="Dictionary" >
+		<id property="id" column="id"></id>
+		<result property="dicName" column="dicName"></result>
+		<result property="dicValue" column="dicValue"></result>
+		<result property="dicType" column="dicType"/>
+	</resultMap>
+
+	<!-- 按ID查询商品类型 -->
+	<select id="findDictionaryByDicType" resultMap="DictionaryMap">
+		select *
+		from ott_dictionarys where status='1' order by orderid desc
+	</select>	
+	
+</mapper>

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>红外手机品牌信息</title>
+#tagLibs()
+</head>
+<body>
+<div class="topline">
+	<a href="${ctx}/equip/findBrandSupport.do" class="wxbtn">红外手机品牌列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF" >#if($!{brand.id}==""|| !${brand.id})新增红外手机品牌#else 修改红外手机品牌#end</a>
+</div>
+<form id="brandForm" name="brandForm" action="" method="post" >
+   <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="margin-top:13px;">
+      <tr>
+			<td>
+				<legend>红外手机品牌信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">品牌名称：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id"  name="id" value="$!{brand.id}"/> 
+                                <input type="hidden" id="oldName" value="$!{brand.name}"/> 
+								<input type="text" id="name"  name="name" value="$!{brand.name}" class="text-writer"/> 
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">支持型号：</td>
+							<td class="pn-fcontent">
+								<textarea id="supportModel"  name="supportModel" rows="10" cols="50">$!{brand.supportModel}</textarea>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">排序：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="sequence"  name="sequence" value="$!{brand.sequence}" class="text-writer"/>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">品牌LOGO：</td>
+							<td class="pn-fcontent">
+								<div id="preview">
+									#if(!${brand.logo}||$!{brand.logo}=="")
+										<img id="imghead" style="width:230px;height:200px;border:1px;" alt="品牌LOGO" src="${ctx}/images/nopic.gif">
+									#else
+										<img id="imghead" style="width:230px;height:200px;border:1px;" alt="品牌LOGO" src="$!{brand.logoUrl}">
+									#end
+								</div>
+							   <input type="hidden" id="logo"  name="logo" value="$!{brand.logo}"/>
+								<input type="file" id="logoFile"  name="logoFile" class="text-writer9"/>
+								<button type="button" id="saveLogoImg" style="width:100px;" class="bt-primary">上传</button>
+							</td>
+						</tr>
+					</table>
+					<div id="uploadImg" style="display:none;height:15px; width:15px; margin:15px auto;">
+                			<img src="${ctx}/images/loadinglit.gif"/>
+                	</div>
+		</td>
+    </tr>
+   <tr>
+    <td style="margin-top:15px;margin-left:150px; ">
+        <button type="button" id="saveBrand" class="bt-primary" >确定</button>
+        <button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/ajaxfileupload.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/uploadPreview.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ott/equip/brandSupportInfo.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>应用市场管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+	<!--  快速转换位置按钮  -->
+	<div class="topline">
+    	<a href="#" class="xzbtn" style="color:#FFFFFF">应用市场列表</a> | 
+        <a href="${ctx}/market/toAppMarket.do" class="wxbtn">新增应用市场</a>
+	</div>
+	<form name="queryForm" id="queryForm" >
+	<!--  搜索表单  -->
+		<table border='0' cellpadding='0' cellspacing='0' style="margin-top:8px;">
+			<tr class="search">
+				<td>应用名称：<input type='text' name='appName' value="$!{appMarket.appName}"/></td>
+				<td>应用市场名称：<input type='text' name='marketName' value="$!{appMarket.marketName}"/></td>
+				<td>平台等级：
+					<select id="grade" name="grade" style="margin:2px 2px;width:120px">
+						<option value="" >=请选择=</option>
+						<option value="a" #if ("a"== $!{appMarket.grade}) selected #end>a</option>
+						<option value="b" #if ("b"== $!{appMarket.grade}) selected #end>b</option>
+						<option value="c" #if ("c"== $!{appMarket.grade}) selected #end>c</option>
+					</select>
+				</td>
+				<td><input id="queryMarket" type="image" src="${ctx}/images/button_search.gif"/></td>
+			</tr>
+		</table>
+		<!--  内容列表   -->
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="11" style="padding-left:8px;">
+					◆ 应用市场 &gt; 应用市场列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+				<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="appName" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">应用名称</a></td>
+				<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="marketName" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">市场名称</a></td>
+				<td width="6%"><a href="javascript:void(0);" onclick="orderBy(this);" name="grade" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">平台等级</a></td>
+				<td width="6%"><a href="javascript:void(0);" onclick="orderBy(this);" name="marketAttr" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">平台属性</a></td>
+				<td width="6%"><a href="javascript:void(0);" onclick="orderBy(this);" name="version" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">版本号</a></td>
+				<td width="5%"><a href="javascript:void(0);" onclick="orderBy(this);" name="totalDownloads" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">总下载</a></td>
+				<td width="5%"><a href="javascript:void(0);" onclick="orderBy(this);" name="monthDownloads" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">月下载</a></td>
+				<td width="5%"><a href="javascript:void(0);" onclick="orderBy(this);" name="weekDownloads" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">周下载</a></td>
+				<td width="5%"><a href="javascript:void(0);" onclick="orderBy(this);" name="dayDownloads" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">日下载</a></td>
+				<td width="5%"><a href="javascript:void(0);" onclick="orderBy(this);" name="reviews" lastOrderBy="$!{appMarket.orderColumn}" class="tb_head">评论数</a></td>
+				<td width="12%">操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    			 <td colspan="11"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+			#foreach ($c in $list)
+				<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    				<td>$!{c.appName}</td>
+    				<td>$!{c.marketName}</td> 
+					<td>$!{c.grade}</td>
+    				<td>$!{c.marketAttr}</td>
+    				<td>$!{c.version}</td>
+    				<td>$!{c.totalDownloads}</td>
+    				<td>$!{c.monthDownloads}</td>
+    				<td>$!{c.weekDownloads}</td>
+    				<td>$!{c.dayDownloads}</td>
+    				<td>$!{c.reviews}</td>
+    				<td>
+						<a href="${ctx}/market/toAppMarket.do?id=$!{c.id}">修改</a> |
+						<a href="${ctx}/market/toAppMarket.do?id=$!{c.id}&isUp=true">版本升级</a> |
+						<a href="${ctx}/market/findAppLoads.do?marketId=$!{c.id}">下载量</a> |
+						<a href="javascript:delAppMarket(this, '$!{c.id}');">删除</a>
+    				</td>
+    			</tr>
+             #end
+    	</table>
+    	<div height="36" align="right">
+            #pagination(${appMarket})
+        </div>
+</form>
+	<script type="text/javascript" src="${ctx}/js/ott/market/listAppMarket.js"></script>
+	</body>
+</html>

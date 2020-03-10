@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.ChannelMapper">
+
+	<insert id="addChannel" parameterType="Channel">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[ insert into ott_channel(name, parentId, cctvRel, tvsouRel,
+			remark,otherName,logoUrl,logoUrl2,status) 
+		values(#{name,jdbcType=VARCHAR},
+			#{parentId,jdbcType=VARCHAR},
+			#{cctvRel,jdbcType=VARCHAR},
+			#{tvsouRel,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR},
+			#{otherName,jdbcType=VARCHAR},
+			#{logoUrl,jdbcType=VARCHAR},
+			#{logoUrl2,jdbcType=VARCHAR},
+			#{status,jdbcType=VARCHAR})
+		]]>
+	</insert> 
+	
+	<update id="updateChannel" parameterType="Channel">
+		update ott_channel set 
+			name =#{name,jdbcType=VARCHAR},
+			parentId =#{parentId,jdbcType=VARCHAR},
+			cctvRel= #{cctvRel,jdbcType=VARCHAR},
+			tvsouRel= #{tvsouRel,jdbcType=VARCHAR},
+			remark =#{remark,jdbcType=VARCHAR},
+			logoUrl=#{logoUrl,jdbcType=VARCHAR},
+			logoUrl2=#{logoUrl2,jdbcType=VARCHAR},
+			otherName=#{otherName,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<delete id="delChannel">
+		delete from ott_channel where id=#{id, jdbcType=INTEGER}
+	</delete>
+	
+	<select id="findChannelByPage" resultMap="ChannelDetailMap">
+		select c.id, c.name, c.parentId,c.otherName,c.status, c.logoUrl
+		from ott_channel c
+		<where>
+			<if test="status !='' and status !=null">
+				c.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="cid !='' and cid !=null">
+				and c.cid = #{cid,jdbcType=VARCHAR}
+			</if>
+			<if test="typeList !='' and typeList !=null">
+				and FIND_IN_SET(c.id, #{typeList,jdbcType=VARCHAR})
+			</if>
+			<if test="name !='' and name !=null">
+				and c.name LIKE CONCAT(CONCAT('%', #{name}),'%') or c.otherName LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+			<if test="parentId !='' and parentId !=null">
+				and FIND_IN_SET(c.id, getChannelList(#{parentId}))
+			</if>
+			<if test="secondNode !='' and secondNode !=null">
+				and c.parentId != #{secondNode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by c.id
+		</if>
+	</select>
+	<select id="getCountChannel" resultType="int">
+		select count(1)
+		from ott_channel c
+		<where>
+			<if test="status !='' and status !=null">
+				c.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="cid !='' and cid !=null">
+				and c.cid = #{cid,jdbcType=VARCHAR}
+			</if>
+			<if test="typeList !='' and typeList !=null">
+				and FIND_IN_SET(c.id, #{typeList,jdbcType=VARCHAR})
+			</if>
+			<if test="name !='' and name !=null">
+				and c.name LIKE CONCAT(CONCAT('%', #{name}),'%') or c.otherName LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+			<if test="parentId !='' and parentId !=null">
+				and FIND_IN_SET(c.id, getChannelList(#{parentId}))
+			</if>
+			<if test="secondNode !='' and secondNode !=null">
+				and c.parentId != #{secondNode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findChannelByCond" resultType="Channel">
+		select c.id, c.name, c.parentId, c.cctvRel, c.tvsouRel,c.status, c.logoUrl, c.logoUrl2,c.cid,c.otherName 
+		from ott_channel c
+		<where>
+			<if test="status !='' and status !=null">
+				c.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="cid !='' and cid !=null">
+				and c.cid = #{cid,jdbcType=VARCHAR}
+			</if>
+			<if test="typeList !='' and typeList !=null">
+				and FIND_IN_SET(c.id, #{typeList,jdbcType=VARCHAR})
+			</if>
+			<if test="name !='' and name !=null">
+				and c.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+			<if test="parentId !='' and parentId !=null">
+				and c.parentId = #{parentId,jdbcType=VARCHAR}
+			</if>
+			<if test="areaId !='' and areaId !=null">
+				and FIND_IN_SET(c.id, getChannelList(#{areaId}))
+			</if>
+			<if test="secondNode !='' and secondNode !=null">
+				and c.parentId != #{secondNode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by c.id
+		</if>
+	</select>
+	
+	<resultMap type="Channel" id="ChannelDetailMap">
+		<id property="id" column="id"></id>
+		<result property="name" column="name"></result>
+		<result property="parentId" column="parentId"></result>
+		<result property="cctvRel" column="cctvRel"></result>
+		<result property="tvsouRel" column="tvsouRel"></result>
+		<result property="remark" column="remark"></result>
+		<result property="status" column="status"></result>
+		<result property="logoUrl" column="logoUrl"></result>
+		<result property="logoUrl2" column="logoUrl2"></result>
+		<result property="cid" column="cid"></result>
+		<result property="otherName" column="otherName"></result>
+	</resultMap>
+	<select id="getChannelById" resultMap="ChannelDetailMap">
+		select c.id,c.name, c.parentId, c.cctvRel, c.tvsouRel,c.remark, c.status, 
+			c.logoUrl, c.logoUrl2,c.cid,c.otherName
+		from ott_channel c where c.id=#{id, jdbcType=INTEGER}
+	</select>
+	
+	<!-- 批量操作 -->
+	<insert id="addChannels" parameterType="java.util.List" useGeneratedKeys="true">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		INSERT INTO ott_channel (name, parentId, rel, remark, status)
+		VALUES 
+		 <foreach collection="list" item="item" index="index" separator="," >
+	        (#{item.name,jdbcType=VARCHAR},
+			#{item.parentId,jdbcType=VARCHAR},
+			#{item.rel,jdbcType=VARCHAR},
+			#{item.remark,jdbcType=VARCHAR},
+			'1')
+	    </foreach>
+	</insert> 
+	
+	<update id="updateChannelStatus">
+		update ott_channel set status =#{status,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<select id="findChannelByName" resultType="Channel">
+		select id,name, parentId,status
+		from ott_channel 
+		where name=#{name,jdbcType=VARCHAR}
+	</select>
+</mapper>

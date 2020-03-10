@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.group.mapper.GroupChannelMapper">
+	
+	<resultMap type="GroupChannel" id="GroupChannelMap">
+			<id property="id" column="id"></id>
+			<result property="operators" column="operators"></result>
+			<result property="groupCode" column="groupCode"></result>
+			<result property="channelName" column="channelName"></result>
+			<result property="localCid" column="localCid"></result>
+			<result property="ochannelId" column="ochannelId"></result>
+			<result property="status" column="status"></result>
+	</resultMap>
+	
+	<!--表名 -->
+	<sql id="tableName">ott_group_channel</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		id
+		,operators
+		,groupCode
+		,channelName
+		,localCid
+		,ochannelId
+		,sequence
+		,status
+	</sql>
+	
+	<!-- 不包含ID字段 -->
+	<sql id="FieldNoID">
+			operators
+			,groupCode
+			,channelName
+			,localCid
+			,ochannelId
+			,sequence
+			,status
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{id}
+		,#{operators}
+		,#{groupCode}
+		,#{channelName}
+		,#{localCid}
+		,#{ochannelId}
+		,#{sequence}
+		,#{status}
+	</sql>
+	<!-- 字段值不包含ID -->
+	<sql id="FieldValueNoID">
+			#{operators}
+			,#{groupCode}
+			,#{channelName}
+			,#{localCid}
+			,#{ochannelId}
+			,#{sequence}
+			,#{status}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="insertGroupChannel">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="FieldNoID"></include>
+		) values (
+	<include refid="FieldValueNoID"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="deleteGroupChannelById">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			id = #{id}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="updateGroupChannel">
+		update
+		<include refid="tableName"></include>
+		set 
+				operators = #{operators}
+				,groupCode = #{groupCode}
+				,channelName = #{channelName}
+				,localCid = #{localCid}
+				,ochannelId = #{ochannelId}
+				,sequence = #{sequence}
+				,status = #{status}
+		where 
+		id = #{id}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findGroupChannelById"  resultMap="GroupChannelMap">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			id = #{id}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="findGroupChannelByPage"  resultMap="GroupChannelMap">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		<where>
+			<if test="operators != null and operators != ''">
+				operators= #{operators}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				and groupCode= #{groupCode}
+			</if>
+			<if test="status !=null and status != ''">
+				and status= #{status}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+	
+	<!-- 总数量 -->
+	<select id="getCountGroupChannel"  resultType="int">
+		select COUNT(1) FROM 
+		<include refid="tableName"></include>
+		<where>
+			<if test="operators != null and operators != ''">
+				operators= #{operators}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				and groupCode= #{groupCode}
+			</if>
+			<if test="status !=null and status != ''">
+				and status= #{status}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="findGroupChannelByCond" resultMap="GroupChannelMap">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		<where>
+			<if test="operators != null and operators != ''">
+				operators= #{operators}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				and groupCode= #{groupCode}
+			</if>
+			<if test="localCid != null and localCid != ''">
+				and localCid= #{localCid}
+			</if>
+			<if test="status !=null and status != ''">
+				and status= #{status}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteGroupChannelByList">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="updateChannelStatus">
+		update
+		<include refid="tableName"></include>
+		set status = #{status}
+		where id = #{id}
+	</update>
+	
+	<update id="updateSequence">
+		update
+		<include refid="tableName"></include>
+		set sequence = #{sequence}
+		where id = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>红外手机品牌管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+	<!--  快速转换位置按钮  -->
+	<div class="topline">
+    	<a href="#" class="xzbtn" style="color:#FFFFFF">红外手机品牌列表</a> | 
+        <a href="${ctx}/equip/toBrandSupport.do" class="wxbtn">新增红外手机品牌</a>
+	</div>
+	<form name="queryForm" id="queryForm" >
+		<!--  内容列表   -->
+		<input type='hidden' id='orderColumn' name="orderColumn" value='$!{brand.orderColumn}'/>
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="6" style="padding-left:8px;">◆ 红外手机品牌 &gt; 红外手机品牌列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+				<td>品牌名称</td>
+				<td>支持型号</td>
+				<td>品牌LOGO</td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="sequence" lastOrderBy="$!{brand.orderColumn}" class="tb_head">排序</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{brand.orderColumn}" class="tb_head">状态</a></td>
+				<td>操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+        			 <td colspan="6"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+		   #foreach ($b in $!list)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    				<td>$!{b.name}</td> 
+    				<td>$!{b.supportModel}</td> 
+					<td>$!{b.logoUrl}</td> 
+					<td>$!{b.sequence}</td>
+    				<td>#if($!{b.status} == '1') 启用  #else 停用 #end</td>
+    				<td><a href="${ctx}/equip/toBrandSupport.do?id=$!{b.id}">编辑</a>
+					#if($!{b.status}=='0')
+            			<a href="javascript:updateBrandStatus(this, '$!{b.id}', '$!{b.status}');">启用</a>
+            		#elseif($!{b.status}=='1')
+            			<a href="javascript:updateBrandStatus(this, '$!{b.id}', '$!{b.status}');">停用</a>
+            		#end
+					</td>
+    			</tr>
+           #end
+		</table>
+		<div height="36" align="right">
+    		#pagination(${brand})
+    	</div>
+</form>
+<script type="text/javascript" src="${ctx}/js/ott/equip/listBrandSupport.js"></script>
+</body>
+</html>

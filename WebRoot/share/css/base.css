@@ -1,0 +1,20 @@
+@charset "utf-8";
+/*CSS reset*/ 
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td{ margin: 0; padding: 0; }
+table { border-collapse: collapse; border-spacing: 0; }
+fieldset, img { border: 0 }
+address, caption, cite, code, dfn, em, th, var { font-style: normal; font-weight: normal }
+strong{ font-style: normal;}
+th{font-weight:bold;}
+ol, ul { list-style: none }
+h1, h2, h3, h4, h5, h6 { font-size: 100%; font-weight: normal }
+q:before, q:after { content: '' }
+abbr, acronym { border: 0 }
+a { text-decoration: none;color:#666666;outline:none;cursor: pointer;}
+.none{ display: none;}
+a:active{border:none;}
+html{*overflow:auto;}
+textarea{resize:none;}
+body{ font:12px/1.5 tahoma,arial,"微软雅黑";background:#ececec;}
+.home_body{ background: #fff;}
+.text_custom{color:#c5c5c5;}

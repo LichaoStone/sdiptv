@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>频道类型信息</title>
+#tagLibs()
+</head>
+<body>
+<form id="form1" name="form1" action="" method="post">
+<div class="topline">
+	<a href="${ctx}/type/findChannelType.do" class="wxbtn">频道类型列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF">新增频道类型</a>
+</div>
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="border:1px solid #cfcfcf;background:#ffffff;">
+    <tr>
+      <td colspan="2">
+				<legend>频道类型信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">类型：</td>
+							<td class="pn-fcontent">
+									<select name="operators" id="operators" style="margin:2px 2px;width:120px;" >
+                    					<option value="" >=请选择=</option>
+                    					#foreach($o in $olist)
+            								<option value="${o.id}" #if (${o.id} == $!{type.operators}) selected #end>${o.name}</option>
+            							#end
+            						</select>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">名称：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id" name="id" value="$!{type.id}"/>
+								<input type="hidden" id="oldName" name="oldName" value="$!{type.name}"/>
+								<input type="text" id="name"  name="name" value="$!{type.name}" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">编号：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="code"  name="code" value="$!{type.code}" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">排序：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="sequence"  name="sequence" value="$!{type.sequence}" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">特殊类型：</td>
+							<td class="pn-fcontent">
+								<input type="radio" id="yes_special" name="isSpecial" value="1" #if($!{type.isSpecial}=='1'|| !${type.isSpecial}) checked="checked" #end/>
+								<label for="yes_special">是</label>
+								<input type="radio" id="no_special" name="isSpecial" value="2" #if($!{type.isSpecial}=='2') checked="checked" #end/>
+								<label for="no_special">否</label>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">终端展现：</td>
+							<td class="pn-fcontent">
+								<input type="radio" id="yes_parentId" name="parentId" value="1" #if($!{type.parentId}=='1'|| !${type.parentId}) checked="checked" #end/>
+								<label for="yes_parentId">是</label>
+								<input type="radio" id="no_parentId" name="parentId" value="0" #if($!{type.parentId}=='0') checked="checked" #end/>
+								<label for="no_parentId">否</label>
+								<em class="menu-tip" style="margin-left:20px;">终端是否显示此类型</em>
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td width="17%">&nbsp;</td>
+    <td width="83%">
+		<button type="button" id="saveType" class="bt-primary">保存</button>
+		<button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/live/typeInfo.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.market.mapper.AppLoadsMapper">
+	<resultMap id="AppLoadsMap" type="AppLoads">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="marketId" property="marketId" jdbcType="VARCHAR" />
+		<result column="marketName" property="marketName" jdbcType="VARCHAR" />
+		<result column="version" property="version" jdbcType="VARCHAR" />
+		<result column="dayDownLoads" property="dayDownLoads" jdbcType="INTEGER" />
+		<result column="recordTime" property="recordTime" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<insert id="addAppLoads" parameterType="AppLoads">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_App_Loads(marketId,marketName,version,dayDownLoads,recordTime)
+				VALUES(
+				#{marketId,jdbcType=VARCHAR},
+				#{marketName,jdbcType=VARCHAR},
+				#{version,jdbcType=VARCHAR},
+				#{dayDownLoads,jdbcType=INTEGER},
+				#{recordTime,jdbcType=VARCHAR}
+				) 
+	</insert>
+
+	<select id="findAppLoadsByPage" resultMap="AppLoadsMap">
+		select id,marketId,marketName,version,dayDownLoads,recordTime
+		from OTT_App_Loads
+		<where>
+			<if test="marketId != null and marketId != ''">
+				marketId= #{marketId,jdbcType=VARCHAR}
+			</if>
+			<if test="marketName != null and marketName != ''">
+				and marketName= #{marketName,jdbcType=VARCHAR}
+			</if>
+			<if test="recordTime != null and recordTime != ''">
+				and recordTime= #{recordTime,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by recordTime desc
+		</if>
+	</select>
+	<select id="getCountAppLoads" resultType="int">
+		select count(1)
+		from OTT_App_Loads 
+		<where>
+			<if test="marketId != null and marketId != ''">
+				marketId= #{marketId,jdbcType=VARCHAR}
+			</if>
+			<if test="marketName != null and marketName != ''">
+				and marketName= #{marketName,jdbcType=VARCHAR}
+			</if>
+			<if test="recordTime != null and recordTime != ''">
+				and recordTime= #{recordTime,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAppLoadsByMarketId" resultMap="AppLoadsMap">
+		<![CDATA[ 
+			select * from OTT_App_Loads where recordTime=date_format(now(),'%Y-%m-%d') and marketId=#{marketId} limit 1
+		]]>
+	</select>
+	
+	<select id="findAppLoadsByMarketIdAndDate" resultMap="AppLoadsMap">
+		<![CDATA[ 
+			select * from OTT_App_Loads where recordTime=#{recordTime,jdbcType=VARCHAR} and marketId=#{marketId,jdbcType=VARCHAR}
+		]]>
+	</select>
+	
+	<select id="getAppLoadsById" resultMap="AppLoadsMap">
+		<![CDATA[ 
+			select * from OTT_App_Loads where id=#{id}
+		]]>
+	</select>
+
+	<delete id="delAppLoadsById">
+		delete from OTT_App_Loads where id=#{id}
+	</delete>
+	
+	<delete id="delAppLoadsByMarketId">
+		delete from OTT_App_Loads where marketId=#{marketId}
+	</delete>
+</mapper>

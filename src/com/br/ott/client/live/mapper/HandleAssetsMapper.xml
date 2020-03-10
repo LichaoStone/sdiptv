@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.HandleAssetsMapper">
+
+    <insert id="addPrograms_log" parameterType="Map">
+        insert into ott_programs_log(filename, isDeal, dealTime, error) values (#{filename, jdbcType=VARCHAR}, #{isDeal, jdbcType=VARCHAR}, sysdate(), #{error, jdbcType=VARCHAR})
+    </insert>
+    
+    <delete id="delProgramsByCidAndDate" parameterType="String">
+        delete from ott_programs_temp where channelId=#{channelId, jdbcType=VARCHAR} and DATE_FORMAT(playTime, '%Y%m%d')=#{day, jdbcType=VARCHAR}
+    </delete>
+    
+    <delete id="delProgramsByIds" parameterType="java.util.Map">
+        delete from ott_programs_temp
+             where id in (<foreach collection="channelList" item="item" index="index" separator=",">#{item.id}</foreach>)
+    </delete>
+    
+    <insert id="addProgramsByMap" parameterType="Map">
+        INSERT INTO ott_programs (name, channelId, playTime, timeLongth, createTime, queue, status)
+		    VALUES
+		  <foreach collection="pmList" item="item" index="index" separator="," >
+	        (#{item.channelName,jdbcType=VARCHAR},
+			#{item.channelId,jdbcType=INTEGER},
+			#{item.playTime,jdbcType=VARCHAR},
+			#{item.timeLongth,jdbcType=VARCHAR},
+			now(),
+			#{item.queue,jdbcType=INTEGER},
+			#{item.status,jdbcType=VARCHAR})
+	      </foreach>
+    </insert>
+  
+    <select id="queryProgramsByIdAndDate" parameterType="Map" resultType="Map">
+        select id,channelId,name,playTime,timeLongth,status,queue from ott_programs_temp where channelId=#{channelId, jdbcType=VARCHAR} and DATE_FORMAT(playTime, '%Y%m%d')=#{day, jdbcType=VARCHAR}
+    </select>
+  
+    <!-- 删除七天前历史数据 -->
+	<delete id="delProgramBy7Date" parameterType="String">
+		<![CDATA[
+		    delete from ott_programs_temp where DATE_FORMAT(playTime, '%Y-%m-%d') < DATE_SUB(str_to_date(#{playTime,jdbcType=VARCHAR},'%Y-%m-%d'), INTERVAL 7 DAY)
+		    ]]> 
+	</delete>
+  
+</mapper>

@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>合作伙伴管理</title>
+#tagLibs()
+#calendar()
+</head>
+<body>
+<!--  快速转换位置按钮  -->
+<form name="queryForm" id="queryForm" method="get">
+<table width='98%' border='0' cellpadding='1' cellspacing='1'
+		bgcolor='#cfcfcf' align="center" style="margin-top:8px">
+		<tr bgcolor='#EEF4EA'>
+			<td background='../images/wbg.gif' align='center'>
+			<table border='0' cellpadding='0' cellspacing='0' height="32">
+    	        <tr class="search">
+        	        <td>合作伙伴名称：<input type='text' name='partnerName' value='$!{partner.partnerName}'/></td>
+        			<td>加入时间：<input type='text' id="createTime" name='createTime' value='$!{partner.createTime}'
+    					readonly="readonly"	onclick="WdatePicker()" class="Wdate"/></td>
+        			<td>
+						<input type="hidden" id="orderColumn" name="orderColumn" value="$!{partner.orderColumn}" />
+						<img id="queryPartner" src="${ctx}/images/button_search.gif"/>
+					</td>
+    			</tr>
+          </table>
+     </td>
+ </tr>
+</table>
+<!--  内容列表   -->
+
+<table id="list-table" width="98%" border="0" cellpadding="2" cellspacing="1" style="margin-top:8px">
+<tr align="left" bgcolor="#eff2f7" height="30">
+	<td width="4%">选择</td>
+    <td width="20%"><a href="javascript:void(0);" onclick="orderBy(this);" name="partnerName" lastOrderBy="$!{partner.orderColumn}" class="tb_head">名称</a></td>
+    <td width="9%"><a href="javascript:void(0);" onclick="orderBy(this);" name="partnerType" lastOrderBy="$!{partner.orderColumn}" class="tb_head">类型</a></td>
+    <td width="9%">电话号码</td>
+    <td width="7%">联系人</td>
+    <td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="createTime" lastOrderBy="$!{partner.orderColumn}" class="tb_head">加入合作时间</a></td>
+    <td width="7%"><a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{partner.orderColumn}" class="tb_head">商家状态</a></td>
+    <td width="6%">操作</td>
+</tr>
+#if ($null.isNull($pml.pagedModelList) || $pml.pagedModelList.size()==0)
+	<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	 <td colspan="8"><h1>暂无相关数据内容</h1></td>
+    </tr>
+#end
+#foreach ($partner in $pml.pagedModelList)
+<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	 <td ><input type="checkbox" id="arcID" name="arcID" class="np" value="$!{partner.id}"/></td>
+     <td ><a href="javascript:void(0)" onclick="toPartnerInfo(this, $!{partner.id})">$!{partner.partnerName}</a></td>
+     <td >$!{partner.partnerTypeName}</td>
+     <td >$!{partner.partnerPhone}</td>
+     <td >$!{partner.linkman}</td>
+     <td >$!{partner.createTime}</td>
+     <td >$!{partner.statusName}</td>
+     <td >
+     	<img src='${ctx}/images/gtk-edit.png' title="编辑" alt="编辑" onclick="toUpdatePartner(this, '$!{partner.id}');" style='cursor:pointer' border='0' width='16' height='16' />
+		<img src='${ctx}/images/gtk-tmp.png' title="合作产品信息" alt="合作产品信息" onclick="toProduct(this, '$!{partner.id}');" style='cursor:pointer' border='0' width='16' height='16' />
+	 </td>
+</tr>
+#end
+<tr bgcolor="#ffffff">
+	<td height="36" colspan="8">
+		&nbsp;
+		<a href="javascript:checkAll('arcID');" class="coolbg">全选</a>
+		<a href="javascript:noCheckAll('arcID');" class="coolbg">取消</a>
+		<a href="javascript:void(0);" class="coolbg" id="delPartner">&nbsp;删除合作伙伴&nbsp;</a>
+		<a href="../partner/toPartner.do;" class="coolbg">&nbsp;添加合作伙伴&nbsp;</a>
+	</td>
+</tr>
+<tr align="right" bgcolor="#F9FCEF">
+	<td height="36" colspan="8" align="center">
+		<div class="pagelistbox">
+			#rendPageInfo(${pml})
+		</div>
+	</td>
+</tr>
+</table>
+</form>
+<!--  搜索表单  -->
+<script type="text/javascript" src="${ctx}/js/ott/partner/listPartner.js"></script>
+</body>
+</html>
+

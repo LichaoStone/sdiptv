@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.UserProgramsMapper">
+	<resultMap id="UserProgramsMap" type="UserPrograms" > 
+		<id property="id" column="id"></id>
+		<result property="uid" column="uid"></result>
+		<result property="programsId" column="programsId"></result>
+		<result property="programsName" column="name"></result>
+		<result property="type" column="type"></result>
+		<result property="createTime" column="createTime"></result>
+	</resultMap>
+
+	<insert id="addUserPrograms" parameterType="UserPrograms">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[
+		insert into ott_user_programs(uid, programsId, type, createTime) 
+		values(#{uid,jdbcType=VARCHAR},
+			#{programsId,jdbcType=VARCHAR},
+			#{type,jdbcType=VARCHAR},
+			now())
+		]]>
+	</insert> 
+	
+	<update id="updateType" >
+		update ott_user_programs set type=#{type,jdbcType=VARCHAR}
+		where uid=#{uid, jdbcType=VARCHAR} and programsId=#{programsId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="findUserProgramsByPage" resultMap="UserProgramsMap">
+		select uf.id, uf.programsId, uf.uid, uf.type, p.name,
+			date_format(uf.createTime,'%Y-%m-%d %H:%i:%s') createTime
+		from ott_user_programs uf
+		left outer join ott_programs p on p.id=uf.programsId
+		<where>
+			<if test="type !='' and type !=null">
+				uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="programsId !='' and programsId !=null">
+				and uf.programsId = #{programsId,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by uf.id desc
+		</if>
+	</select>
+	<select id="getCountUserPrograms" resultType="int">
+		select count(1)
+		from ott_user_programs uf
+		left outer join ott_programs p on p.id=uf.programsId
+		<where>
+			<if test="type !='' and type !=null">
+				uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="programsId !='' and programsId !=null">
+				and uf.programsId = #{programsId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findUserProgramsByCond" resultMap="UserProgramsMap">
+		select uf.id, uf.programsId, uf.uid, uf.type, p.name,
+			date_format(uf.createTime,'%Y-%m-%d %H:%i:%s') createTime
+		from ott_user_programs uf
+		left outer join ott_programs p on p.id=uf.programsId
+		<where>
+			<if test="type !='' and type !=null">
+				uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="programsId !='' and programsId !=null">
+				and uf.programsId = #{programsId,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by uf.id desc
+		</if>
+	</select>
+	
+	<select id="getUserProgramsByUidAndPid" resultType="UserPrograms">
+		select id, uid, programsId,type
+		from ott_user_programs where uid=#{uid, jdbcType=VARCHAR} and programsId = #{programsId,jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

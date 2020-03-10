@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.group.mapper.UserGroupMapper">
+	
+	<resultMap type="UserGroup" id="UserGroupMap">
+			<id property="id" column="id"></id>
+			<result property="groupName" column="groupName"></result>
+			<result property="groupCode" column="groupCode"></result>
+			<result property="operators" column="operators"></result>
+			<result property="status" column="status"></result>
+			<result property="aaaStatus" column="aaaStatus"></result>
+			<result property="lcStatus" column="lcStatus"></result>
+	</resultMap>
+	
+	<!--表名 -->
+	<sql id="tableName">ott_user_group</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		id
+		,operators
+		,groupName
+		,groupCode
+		,status
+		,aaaStatus
+		,lcStatus
+	</sql>
+	
+	<!-- 不包含ID字段 -->
+	<sql id="FieldNoID">
+			operators
+			,groupName
+			,groupCode
+			,status
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{id}
+		,#{operators}
+		,#{groupName}
+		,#{groupCode}
+		,#{status}
+	</sql>
+	<!-- 字段值不包含ID -->
+	<sql id="FieldValueNoID">
+			#{operators}
+			,#{groupName}
+			,#{groupCode}
+			,#{status}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="insertUserGroup">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			insert into 
+		<include refid="tableName"></include>
+			(
+		<include refid="FieldNoID"></include>
+			) values (
+		<include refid="FieldValueNoID"></include>
+			)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="deleteUserGroupById">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			id = #{id}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="updateUserGroup">
+		update
+		<include refid="tableName"></include>
+		set 
+				operators = #{operators}
+				,groupName = #{groupName}
+				,groupCode = #{groupCode}
+				,status = #{status}
+		where 
+		id = #{id}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findUserGroupById"  resultMap="UserGroupMap">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			id = #{id}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="findUserGroupByPage"  resultMap="UserGroupMap">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		<where>
+			<if test="operators != null and operators != ''">
+				operators=#{operators}
+			</if>
+			<if test="status != null and status != ''">
+				and status=#{status}
+			</if>
+			<if test="groupName != null and groupName != ''">
+				and groupName=#{groupName}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id
+		</if>
+	</select>
+	
+	<!-- 总数量 -->
+	<select id="getCountUserGroup"  resultType="int">
+		select COUNT(1) FROM 
+		<include refid="tableName"></include>
+		<where>
+			<if test="operators != null and operators != ''">
+				operators=#{operators}
+			</if>
+			<if test="status != null and status != ''">
+				and status=#{status}
+			</if>
+			<if test="groupName != null and groupName != ''">
+				and groupName=#{groupName}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="findUserGroupByCond" resultMap="UserGroupMap">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		<where>
+			<if test="operators != null and operators != ''">
+				operators=#{operators}
+			</if>
+			<if test="status != null and status != ''">
+				and status=#{status}
+			</if>
+			<if test="groupName != null and groupName != ''">
+				and groupName=#{groupName}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteUserGroupByList">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="updateUserGroupStatus">
+		update
+		<include refid="tableName"></include>
+		set status = #{status}
+		where id = #{id}
+	</update>
+	
+	<update id="updateUserGroupStatus2">
+		update
+		<include refid="tableName"></include>
+		set aaaStatus = #{aaaStatus}
+		where id = #{id}
+	</update>
+	
+	<update id="updateUserGroupStatus3">
+		update
+		<include refid="tableName"></include>
+		set lcStatus = #{lcStatus}
+		where id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.UserFollowMapper">
+	<resultMap id="UserFollowMap" type="UserFollow" > 
+		<id property="id" column="id"></id>
+		<result property="uid" column="uid"></result>
+		<result property="operators" column="operators"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="type" column="type"></result>
+		<result property="status" column="status"></result>
+		<result property="createTime" column="createTime"></result>
+	</resultMap>
+
+	<insert id="addUserFollow" parameterType="UserFollow">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[
+		insert into ott_user_follow(uid,operators, channelId, type, status, createTime) 
+		values(#{uid,jdbcType=VARCHAR},
+			#{operators,jdbcType=VARCHAR},
+			#{channelId,jdbcType=VARCHAR},
+			#{type,jdbcType=VARCHAR},
+			#{status,jdbcType=VARCHAR},
+			now())
+		]]>
+	</insert> 
+	
+	<update id="updateUserFollowStatus" >
+		update ott_user_follow set status=#{status,jdbcType=VARCHAR}, createTime=now()
+		where id=#{id}
+	</update>
+	
+	<select id="findUserFollowByPage" resultMap="UserFollowMap">
+		select uf.id, uf.channelId,uf.operators,uf.uid, uf.type,date_format(uf.createTime,'%Y-%m-%d %H:%i:%s') createTime, uf.status
+		from ott_user_follow uf
+		<where>
+			<if test="type !='' and type !=null">
+				uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and uf.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="channelId !='' and channelId !=null">
+				and uf.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="beginTime != null and beginTime !=''">
+				and uf.createTime >= str_to_date(#{beginTime,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[and uf.createTime < DATE_ADD( str_to_date(#{endTime,jdbcType=VARCHAR},'%Y-%m-%d'), INTERVAL 1 DAY)]]>
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by uf.id desc
+		</if>
+	</select>
+	<select id="getCountUserFollow" resultType="int">
+		select count(1)
+		from ott_user_follow uf
+		<where>
+			<if test="type !='' and type !=null">
+				uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and uf.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="channelId !='' and channelId !=null">
+				and uf.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="beginTime != null and beginTime !=''">
+				and uf.createTime >= str_to_date(#{beginTime,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[and uf.createTime < DATE_ADD( str_to_date(#{endTime,jdbcType=VARCHAR},'%Y-%m-%d'), INTERVAL 1 DAY)]]>
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="ChannelFollowMap" type="UserFollow" > 
+		<result property="uid" column="uid"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="localCid" column="localCid"></result>
+		<result property="singleLiveServer" column="singleLiveServer"></result>
+		<result property="singleLiveServer2" column="singleLiveServer2"></result>
+		<result property="groupLiveServer" column="groupLiveServer"></result>
+		<result property="groupLiveServer2" column="groupLiveServer2"></result>
+	</resultMap>
+	<select id="findFollowOperatorsByPage" resultMap="ChannelFollowMap">
+		select uf.channelId, uf.uid, oc.channelName,oc.playChannelId as localCid,
+			oc.singleLiveServer,singleLiveServer2,oc.groupLiveServer,groupLiveServer2
+		from ott_user_follow uf
+			left outer join ott_operators_channel oc on oc.channelId=uf.channelId and oc.status='1'
+		where uf.status='1' and uf.operators=oc.operators
+			<if test="type !='' and type !=null">
+				and uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(uf.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and oc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+		group by oc.channelName
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by uf.id desc
+		</if>
+	</select>
+	
+	<select id="getCountFollowOperators" resultType="int">
+		select count(1) from (select uf.id
+		from ott_user_follow uf
+			left outer join ott_operators_channel oc on oc.channelId=uf.channelId 
+		where uf.status='1' and oc.status='1' and uf.operators=oc.operators
+			<if test="type !='' and type !=null">
+				and uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(uf.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and oc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+		group by oc.channelName) temp
+	</select>
+	
+	<resultMap id="COperatorsUserFollowMap" type="UserFollow" > 
+		<id property="id" column="id"></id>
+		<result property="uid" column="uid"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="programId" column="programId"></result>
+		<result property="programName" column="programName"></result>
+		<result property="playTime" column="playTime"></result>
+		<result property="timeLongth" column="timeLongth"></result>
+		<result property="queue" column="queue"></result>
+		<result property="playId" column="playId"></result>
+		<result property="dbPlay" column="dbPlay"></result>
+		<result property="localCid" column="localCid"></result>
+		<result property="singleLiveServer" column="singleLiveServer"></result>
+		<result property="singleLiveServer2" column="singleLiveServer2"></result>
+		<result property="groupLiveServer" column="groupLiveServer"></result>
+		<result property="groupLiveServer2" column="groupLiveServer2"></result>
+	</resultMap>
+	<select id="findUserFollowOperatorsByPage" resultMap="COperatorsUserFollowMap">
+		select uf.id, uf.channelId, uf.uid,p.id as programId,p.name as programName, date_format(p.playTime,'%Y-%m-%d %H:%i') playTime, p.dbPlay,
+			p.timeLongth,p.queue,p.playId, oc.channelName,oc.playChannelId as localCid,oc.singleLiveServer,singleLiveServer2,oc.groupLiveServer,groupLiveServer2
+		from ott_user_follow uf
+			left outer join ott_programs p on uf.channelId=p.channelId
+			left outer join ott_operators_channel oc on oc.channelId=uf.channelId
+		where uf.status='1' and oc.status='1' and uf.operators=oc.operators
+			<if test="type !='' and type !=null">
+				and uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(uf.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and oc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="channelId !='' and channelId !=null">
+				and uf.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="playNow !='' and playNow !=null">
+				and now() BETWEEN p.playTime and DATE_ADD(p.playTime, INTERVAL p.timeLongth MINUTE)
+			</if>
+			<if test="beginTime != null and beginTime !=''">
+				and uf.createTime >= str_to_date(#{beginTime,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[and uf.createTime < DATE_ADD( str_to_date(#{endTime,jdbcType=VARCHAR},'%Y-%m-%d'), INTERVAL 1 DAY)]]>
+			</if>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by uf.id desc
+		</if>
+	</select>
+	<select id="getCountUserFollowByOperators" resultType="int">
+		select count(uf.id)
+		from ott_user_follow uf
+			left outer join ott_programs p on uf.channelId=p.channelId
+			left outer join ott_operators_channel oc on oc.channelId=uf.channelId
+		where uf.status='1' and oc.status='1' and uf.operators=oc.operators
+			<if test="type !='' and type !=null">
+				and uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(uf.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and oc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="channelId !='' and channelId !=null">
+				and uf.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="playNow !='' and playNow !=null">
+				and now() BETWEEN p.playTime and DATE_ADD(p.playTime, INTERVAL p.timeLongth MINUTE)
+			</if>
+			<if test="beginTime != null and beginTime !=''">
+				and uf.createTime >= str_to_date(#{beginTime,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[and uf.createTime < DATE_ADD( str_to_date(#{endTime,jdbcType=VARCHAR},'%Y-%m-%d'), INTERVAL 1 DAY)]]>
+			</if>
+	</select>
+	
+	<select id="findUserFollowByCond" resultMap="UserFollowMap">
+		select uf.id, uf.channelId, uf.operators, uf.uid, uf.type,date_format(uf.createTime,'%Y-%m-%d %H:%i:%s') createTime, uf.status
+		from ott_user_follow uf
+		<where>
+			<if test="type !='' and type !=null">
+				uf.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="uid !='' and uid !=null">
+				and uf.uid = #{uid,jdbcType=VARCHAR}
+			</if>
+			<if test="channelId !='' and channelId !=null">
+				and uf.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="beginTime != null and beginTime !=''">
+				and uf.createTime >= str_to_date(#{beginTime,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[and uf.createTime < DATE_ADD( str_to_date(#{endTime,jdbcType=VARCHAR},'%Y-%m-%d'), INTERVAL 1 DAY)]]>
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by uf.id desc
+		</if>
+	</select>
+	
+	<select id="getUserFollowByUidAndCid" resultType="UserFollow">
+		select id, uid, channelId, type, status
+		from ott_user_follow 
+		where uid=#{uid, jdbcType=VARCHAR} 
+			and channelId = #{channelId,jdbcType=VARCHAR}
+			and type = #{type,jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="delFollowList">
+		delete from ott_user_follow where id in
+		 <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+	<delete id="delWatchChannel">
+		delete from ott_user_follow where id =#{id}  
+	</delete>
+</mapper>

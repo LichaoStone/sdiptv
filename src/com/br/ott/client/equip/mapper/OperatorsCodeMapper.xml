@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.equip.mapper.OperatorsCodeMapper">
+	<resultMap id="OperatorsCodeMap" type="OperatorsCode">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="areaId" property="areaId" jdbcType="VARCHAR" />
+		<result column="areaName" property="areaName" jdbcType="VARCHAR" />
+		<result column="operators" property="operators" jdbcType="VARCHAR" />
+		<result column="operatorsName" property="operatorsName" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="brandId" property="brandId" jdbcType="VARCHAR" />
+		<result column="brandName" property="brandName" jdbcType="VARCHAR" />
+		<result column="modelName" property="modelName" jdbcType="VARCHAR" />
+		<result column="codeFormat" property="codeFormat" jdbcType="VARCHAR" />
+		<result column="clientCode" property="clientCode" jdbcType="VARCHAR" />
+		<result column="keyName" property="keyName" jdbcType="VARCHAR" />
+		<result column="keyCode" property="keyCode" jdbcType="VARCHAR" />
+		<result column="allCode" property="allCode" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 添加红外码 -->
+	<insert id="addOperatorsCode" parameterType="OperatorsCode">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO ott_operators_code(areaId,operators,type,brandId,modelName,codeFormat,clientCode,keyName,
+				keyCode,allCode,sequence, status)
+				VALUES(#{areaId,jdbcType=VARCHAR},
+				#{operators,jdbcType=VARCHAR},
+				#{type,jdbcType=VARCHAR},
+				#{brandId,jdbcType=VARCHAR},
+				#{modelName,jdbcType=VARCHAR},
+				#{codeFormat,jdbcType=VARCHAR},
+				#{clientCode,jdbcType=VARCHAR},
+				#{keyName,jdbcType=VARCHAR},
+				#{keyCode,jdbcType=VARCHAR},
+				#{allCode,jdbcType=VARCHAR},
+				#{sequence,jdbcType=VARCHAR},
+				'1'
+				) 
+	</insert>
+	<!--分页查询红外码 -->
+	<select id="findOperatorsCodeByPage" resultMap="OperatorsCodeMap">
+		select c.*,a.name as areaName, o.name as operatorsName,b.name as brandName
+		from ott_operators_code c
+			left outer join ott_area a on a.id=c.areaId
+			left outer join ott_operators o on o.id=c.operators
+			left outer join ott_hard_brand b on b.id=c.brandId
+		<where>
+			<if test="operators != null and operators != ''">
+				c.operators= #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				and c.areaId= #{areaId,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+				and c.type= #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="codeFormat != null and codeFormat != ''">
+				and c.codeFormat= #{codeFormat,jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and a.parentId= #{parentId,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and c.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by c.id desc
+		</if>
+	</select>
+	<select id="getCountOperatorsCode" resultType="int">
+		select count(1)
+		from ott_operators_code c
+			left outer join ott_area a on a.id=c.areaId
+			left outer join ott_operators o on o.id=c.operators
+			left outer join ott_hard_brand b on b.id=c.brandId
+		<where>
+			<if test="operators != null and operators != ''">
+				c.operators= #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				and c.areaId= #{areaId,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+				and c.type= #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="codeFormat != null and codeFormat != ''">
+				and c.codeFormat= #{codeFormat,jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and a.parentId= #{parentId,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and c.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="getOperatorsCodeById" resultMap="OperatorsCodeMap">
+		<![CDATA[ 
+			select c.*,(select a.name from ott_area a where a.id=c.areaId) as areaName,
+			(select o.name from ott_operators o where o.id=c.operators) as operatorsName,
+			(select b.name from ott_hard_brand b where b.id=c.brandId) as brandName
+			from ott_operators_code c
+		 	where c.id=#{id}
+		]]>
+	</select>
+
+	<!-- 修改红外码 -->
+	<update id="updateOperatorsCode" parameterType="OperatorsCode">
+		<![CDATA[ UPDATE ott_operators_code SET 
+				areaId=#{areaId,jdbcType=VARCHAR},
+				operators=#{operators,jdbcType=VARCHAR},
+				type=#{type,jdbcType=VARCHAR},
+				brandId=#{brandId,jdbcType=VARCHAR},
+				modelName=#{modelName,jdbcType=VARCHAR},
+				codeFormat=#{codeFormat,jdbcType=VARCHAR},
+				clientCode=#{clientCode,jdbcType=VARCHAR},
+				keyName=#{keyName,jdbcType=VARCHAR},
+				keyCode=#{keyCode,jdbcType=VARCHAR},
+				allCode=#{allCode,jdbcType=VARCHAR},
+				sequence=#{sequence,jdbcType=VARCHAR}
+			where id=#{id}
+		]]>
+	</update>
+
+	<select id="findOperatorsCodeByCond" resultMap="OperatorsCodeMap">
+		select c.*,(select a.name from ott_area a where a.id=c.areaId) as areaName,
+		(select o.name from ott_operators o where o.id=c.operators) as operatorsName,
+		(select b.name from ott_hard_brand b where b.id=c.brandId) as brandName
+		from ott_operators_code c
+		<where>
+			<if test="operators != null and operators != ''">
+				c.operators= #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				and c.areaId= #{areaId,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+				and c.type= #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="brandId != null and brandId != ''">
+				and c.brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and c.modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="keyName != null and keyName != ''">
+				and c.keyName= #{keyName,jdbcType=VARCHAR}
+			</if>
+			<if test="keyCode != null and keyCode != ''">
+				and c.keyCode= #{keyCode,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and c.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by c.id desc
+		</if>
+	</select>
+
+	<select id="findOperatorsCodeByOPList" resultMap="OperatorsCodeMap">
+		select c.*
+		from ott_operators_code c
+		where c.status='1' 
+		and  FIND_IN_SET(c.operators, #{opList,jdbcType=VARCHAR})
+		and  FIND_IN_SET(c.keyName, #{keyList,jdbcType=VARCHAR})
+		order by c.operators desc
+	</select>
+	
+	<update id="updateOperatorsCodeStatus">
+		UPDATE ott_operators_code SET status=#{status,jdbcType=VARCHAR} where id=#{id}
+	</update>
+	
+	<delete id="delOperatorsCode">
+		DELETE FROM ott_operators_code where id=#{id}
+	</delete>
+	
+	<delete id="delOperatorsCodeList">
+		delete from ott_operators_code where id in
+	     <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+	
+	<delete id="delOperatorsCodeByOperators">
+		DELETE FROM ott_operators_code where operators=#{operators}
+	</delete>
+	
+	<insert id="addOperatorsCodeList" parameterType="java.util.List" useGeneratedKeys="true">
+		INSERT INTO ott_operators_code(areaId,operators,type,brandId,modelName,codeFormat,clientCode,keyName,keyCode,allCode,sequence, status)
+		VALUES
+		 <foreach collection="list" item="item" index="index" separator="," >
+	        (
+	        #{item.areaId,jdbcType=VARCHAR},
+			#{item.operators,jdbcType=VARCHAR},
+			#{item.type,jdbcType=VARCHAR},
+			#{item.brandId,jdbcType=VARCHAR},
+			#{item.modelName,jdbcType=VARCHAR},
+			#{item.codeFormat,jdbcType=VARCHAR},
+			#{item.clientCode,jdbcType=VARCHAR},
+			#{item.keyName,jdbcType=VARCHAR},
+			#{item.keyCode,jdbcType=VARCHAR},
+			#{item.allCode,jdbcType=VARCHAR},
+			#{item.sequence,jdbcType=VARCHAR},
+			'1')
+	    </foreach>
+	</insert> 
+</mapper>

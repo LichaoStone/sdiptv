@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>红外方案信息</title>
+#tagLibs()
+</head>
+<body>
+<div class="topline">
+	<a href="${ctx}/equip/findOperators.do" class="wxbtn">红外方案列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF" >#if($!{operators.id}==""|| !${operators.id})新增红外方案#else 修改红外方案#end</a>
+</div>
+<form id="form1" name="form1" action="" method="post" >
+   <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="margin-top:13px;">
+      <tr>
+			<td>
+				<legend>红外方案信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">运营商区域：</td>
+							<td class="pn-fcontent">
+								<select id="parentId" name="parentId" style="margin:2px 2px;width:120px" onchange="changeArea(this, 'areaId');">
+    								<option value="" >=请选择=</option>
+                					#foreach($a in $areas)
+										<option value="${a.id}" #if (${a.id} == $!{operators.parentId}) selected #end>${a.name}</option>
+									#end
+    							</select>
+								<select name="areaId" id="areaId" style="margin:2px 2px;width:120px" onchange="changeCityOperators(this, 'cityOperators');">
+        								#foreach($a in $alist)
+        									<option value="${a.id}" #if (${a.id} == $!{operators.areaId}) selected #end>${a.name}</option>
+        								#end
+    							</select>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">红外方案：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id"  name="id" value="$!{operators.id}"/> 
+								<input type="text" id="name"  name="name" value="$!{operators.name}" class="text-writer"/> 
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">运营商名称：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="spName"  name="spName" value="$!{operators.spName}" class="text-writer"/>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">红外方案编码：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="code"  name="code" value="$!{operators.code}" class="text-writer"/>
+								<input type="hidden" id="oldCode"  value="$!{operators.code}" />
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">红外方案全称：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="fullName"  name="fullName" value="$!{operators.fullName}" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">频道运营商：</td>
+							<td class="pn-fcontent">
+								<select id="cityOperators" name="cityOperators" style="margin:2px 2px;width:120px" >
+    								<option value="" >=请选择=</option>
+                					#foreach($a in $coList)
+										<option value="${a.id}" #if (${a.id} == $!{operators.cityOperators}) selected #end>${a.name}</option>
+									#end
+    							</select>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">运营商别名：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="otherName"  name="otherName" value="$!{operators.otherName}" />
+                                <span id="span_operators">$!{operators.otherName}</span>
+								<em class="init-tip">对应频道运营商名称</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">排序：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="sequence"  name="sequence" value="$!{operators.sequence}" class="text-writer"/> 
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td style="margin-top:15px;margin-left:150px; ">
+        <button type="button" id="saveOperators" class="bt-primary" >确定</button>
+        <button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ott/equip/operatorsInfo.js"></script>
+</body>
+</html>

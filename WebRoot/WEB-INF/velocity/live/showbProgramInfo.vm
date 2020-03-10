@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>节目单信息</title>
+#tagLibs()
+#calendar()
+<script type="text/javascript" src="${ctx}/xheditor/xheditor-1.1.14-zh-cn.min.js"></script>
+</head>
+<body>
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="border:1px solid #cfcfcf;background:#ffffff;">
+    <tr>
+      <td colspan="2">
+      	<fieldset style="height:100%;">
+				<legend>节目信息</legend>
+					
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+					#if(!${p.name}||$!{p.name}=="") 
+						<tr>
+							<td class="pn-fcontent" colspan="4">
+							<strong>当前节目没有录入基础节目信息表，请点击<a href="${ctx}/bprogram/toAddBProgram.do?name=$!name"><font color="blue">  基础节目录入   </font></a>进行数据录入</strong>
+							</td>
+						</tr>	
+					 #end
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">节目名称：</td>
+							<td class="pn-fcontent">
+								$!{p.name}
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">所属类型：</td>
+							<td class="pn-fcontent">
+									#foreach($ptype in $ptypes)
+										#if ($!{ptype.dicValue} == $!{p.ptype}) $!{ptype.dicName} #end
+									#end
+									#foreach($ttype in $ttypes)
+										#if ($!{ttype.dicValue} == $!{p.ttype}) - $!{ttype.dicName} #end
+									#end
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">其它名称：</td>
+							<td class="pn-fcontent">
+								$!{p.otherName}
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">内容提供商：</td>
+							<td class="pn-fcontent">
+									#foreach($cProvider in $cProviders)
+										#if (${cProvider.dicValue} == $!{p.cProvider}) $!{cProvider.dicName} #end
+									#end
+                            </td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">播放时长：</td>
+							<td class="pn-fcontent">
+							$!{p.timeLongth}
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">语言：</td>
+							<td class="pn-fcontent">
+									#foreach($language in $languages)
+										#if (${language.dicValue} == $!{p.language}) ${language.dicName} #end
+									#end
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">编码：</td>
+							<td class="pn-fcontent">
+								$!{p.pcode}
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">码率：</td>
+							<td class="pn-fcontent">
+									#foreach($bitrate in $bitrates)
+										#if (${bitrate.dicValue} == $!{p.bitrate}) ${bitrate.dicName} #end
+									#end
+                                
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">版本号：</td>
+							<td class="pn-fcontent">
+								$!{p.version}
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">产地：</td>
+							<td class="pn-fcontent">
+									#foreach($origin in $origins)
+										#if (${origin.dicValue} == $!{p.origin}) ${origin.dicName} #end
+									#end
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">导演：</td>
+							<td class="pn-fcontent">
+								$!{p.director}
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">推荐类型：</td>
+							<td class="pn-fcontent">
+									#foreach($ztype in $ztypes)
+										#if (${ztype.dicValue} == $!{p.ztype}) ${ztype.dicName} #end
+									#end
+                                
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">主演：</td>
+							<td class="pn-fcontent">
+								$!{p.actor}
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">特殊频道：</td>
+							<td class="pn-fcontent">
+									#if("001" == $!{p.channelId})非特殊频道节目 #end
+    								#foreach($c in $!channels)
+    									#if($!{c.id}==$!{p.channelId}) $!{c.name} #end	
+    								#end
+                                
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">主持人：</td>
+							<td class="pn-fcontent">
+								$!{p.compere}
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">上映年份：</td>
+							<td class="pn-fcontent">
+								$!{p.playyear}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">播放地址：</td>
+							<td class="pn-fcontent">
+								$!{p.playUrl}
+							</td>
+							<td width="10%" class="pn-flabel pn-flabel-h">关键字：</td>
+							<td class="pn-fcontent">
+								$!{p.keyword}
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">节目LOGO：</td>
+							<td class="pn-fcontent">
+								<div id="preview">
+									#if(!${p.logoImgUrl}||$!{p.logoImgUrl}=="")
+										<img id="imghead" style="width:230px;height:200px;border:1px;" alt="频道LOGO" src="${ctx}/images/nopic.gif">
+									#else
+										<img id="imghead" style="width:230px;height:200px;border:1px;" alt="频道LOGO" src="${sourceUrl}$!{p.logoImgUrl}">
+									#end
+								</div>
+							</td>
+								<div id="uploadImg" style="display:none;height:15px; width:15px; margin:15px auto;">
+                            			<img src="${ctx}/images/loadinglit.gif"/>
+                            	</div>
+                                <em id="top-message" class="top-message" style="display:none;margin-top:20px;"></em>
+							<td width="10%" class="pn-flabel pn-flabel-h">节目简介图：</td>
+							<td class="pn-fcontent">
+								<div id="preview2">
+									#if(!${p.descImgUrl}||$!{p.descImgUrl}=="")
+										<img id="imghead2" style="width:230px;height:200px;border:1px;" alt="节目简介" src="${ctx}/images/nopic.gif">
+									#else
+										<img id="imghead2" style="width:230px;height:200px;border:1px;" alt="节目简介" src="${sourceUrl}$!{p.descImgUrl}">
+									#end
+								</div>
+							</td>
+						</tr> 
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">简介说明：</td>
+							<td class="pn-fcontent" colspan="3">
+								$!{p.remark}
+							</td>
+						</tr>
+					</table>
+				</fieldset>		
+		</td>
+    </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/ajaxfileupload.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/live/programsInfo.js"></script>
+</body>
+</html>

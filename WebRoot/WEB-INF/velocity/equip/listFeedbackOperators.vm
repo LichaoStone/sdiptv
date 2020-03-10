@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>运营商品牌型号反馈管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+	<form name="queryForm" id="queryForm" >
+	<!--  搜索表单  -->
+		<table border='0' cellpadding='0' cellspacing='0' style="margin-top:8px;">
+			<tr class="search">
+				<td>设备类型：<select name="hardType" id="hardType" style="width:134px">
+							<option value="" >=请选择=</option>
+        					#foreach($mt in $dicts)
+								<option value="${mt.dicValue}" #if (${mt.dicValue} == $!{feedback.hardType}) selected #end>${mt.dicName}</option>
+							#end
+						</select>
+				</td>
+				<td>品牌：<input type='text' name='brandName' value="$!{feedback.brandName}" style="margin:2px 2px;width:120px"/>
+				</td>
+				<td>型号：<input type='text' name='modelName' value="$!{feedback.modelName}" style="margin:2px 2px;width:120px"/>
+				          <input type='hidden' id='orderColumn' name="orderColumn" value='$!{feedback.orderColumn}'/>
+				</td>
+				<td><input id="queryFeedback" type="image" src="${ctx}/images/button_search.gif"/></td>
+			</tr>
+		</table>
+		<!--  内容列表   -->
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="12" style="padding-left:8px;">
+					◆ 运营商品牌型号反馈管理 &gt; 运营商品牌型号反馈列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+				<td width="5%"><input type="checkbox" id="allSelect" style="padding-top:5px;"  onclick="isCheckAll('arcID',this);"><label for="allSelect">全选</label></td>
+				<td width="7%">省</td>
+				<td width="7%">市</td>
+				<td width="10%">运营商</td>
+				<td width="10%">设备类型</td>
+				<td width="10%">品牌</td>
+				<td width="10%">型号</td>
+				<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="fo.feedTime" lastOrderBy="$!{feedback.orderColumn}" class="tb_head">反馈时间</a></td>
+				<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="fo.feedMan" lastOrderBy="$!{feedback.orderColumn}" class="tb_head">反馈人</a></td>
+				<td width="7%"><a href="javascript:void(0);" onclick="orderBy(this);" name="fo.feedType" lastOrderBy="$!{feedback.orderColumn}" class="tb_head">反馈类型</a></td>
+				<td width="7%"><a href="javascript:void(0);" onclick="orderBy(this);" name="fo.status" lastOrderBy="$!{feedback.orderColumn}" class="tb_head">状态</a></td>
+				<td width="7%">操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    			 <td colspan="12"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+			#foreach ($type in $list)
+				<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    				<td><input type="checkbox" id="arcID" name="arcID" class="np" value="$!{type.id}"/></td>
+					<td>$!{type.province}</td>
+					<td>$!{type.city}</td>
+					<td>$!{type.operators}</td>
+					<td>$!{type.typeName}</td> 
+					<td>$!{type.brandName}</td>
+    				<td>$!{type.modelName}</td> 
+					<td>$!{type.feedTimeStr}</td> 
+    				<td>$!{type.feedMan}</td>
+    				<td>$!{type.feedType}</td>
+    				<td>
+    					#if('1'==$!{type.status})
+                			处理中
+                		#elseif('0'==$!{type.status})
+                			未处理
+                		#elseif('2'==$!{type.status})
+                			已处理
+						#end
+					</td>
+    				<td>
+						#if('0'==$!{type.status})
+                			<a href="${ctx}/equip/toFeedbackOperators.do?id=$!{type.id}">审核</a>
+                		#elseif('1'==$!{type.status})
+                			<a href="${ctx}/equip/toFeedbackOperators.do?id=$!{type.id}">处理</a>
+                		#elseif('2'==$!{type.status})
+							<a href="${ctx}/equip/toFeedbackOperators.do?id=$!{type.id}">查看</a>
+						#end
+                		<a href="javascript:delFeedback(this, '$!{type.id}');">删除</a>
+    				</td>
+    			</tr>
+             #end
+    	</table>
+		<div height="36" align="left">
+    		<a href="javascript:void(0);" class="wxbtn" id="delFeedback">批量删除</a>
+    	</div>
+    	<div height="36" align="right">
+            #pagination(${feedback})
+        </div>
+</form>
+</body>
+	<script type="text/javascript" src="${ctx}/js/ott/equip/listFeedbackOperators.js"></script>
+</html>

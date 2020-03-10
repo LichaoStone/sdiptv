@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.equip.mapper.InfraredCodeMapper">
+	<resultMap id="InfraredCodeMap" type="InfraredCode">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="brandId" property="brandId" jdbcType="VARCHAR" />
+		<result column="brandName" property="brandName" jdbcType="VARCHAR" />
+		<result column="brandCode" property="brandCode" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="modelName" property="modelName" jdbcType="VARCHAR" />
+		<result column="codeFormat" property="codeFormat" jdbcType="VARCHAR" />
+		<result column="clientCode" property="clientCode" jdbcType="VARCHAR" />
+		<result column="keyName" property="keyName" jdbcType="VARCHAR" />
+		<result column="keyCode" property="keyCode" jdbcType="VARCHAR" />
+		<result column="allCode" property="allCode" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 添加红外码 -->
+	<insert id="addInfraredCode" parameterType="InfraredCode">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_HARD_Code(brandId,type,modelName,codeFormat,clientCode,keyName,
+				keyCode,allCode,sequence, status)
+				VALUES(
+				#{brandId,jdbcType=VARCHAR},
+				#{type,jdbcType=VARCHAR},
+				#{modelName,jdbcType=VARCHAR},
+				#{codeFormat,jdbcType=VARCHAR},
+				#{clientCode,jdbcType=VARCHAR},
+				#{keyName,jdbcType=VARCHAR},
+				#{keyCode,jdbcType=VARCHAR},
+				#{allCode,jdbcType=VARCHAR},
+				#{sequence,jdbcType=VARCHAR},
+				'1'
+				) 
+	</insert>
+	<!--分页查询红外码 -->
+	<select id="findInfraredCodeByPage" resultMap="InfraredCodeMap">
+		select c.*,b.name as brandName,b.code as brandCode 
+		from OTT_HARD_Code c
+		left outer join OTT_HARD_BRAND b on b.id=c.brandId
+		<where>
+			<if test="brandId != null and brandId != ''">
+				c.brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null and brandCode != ''">
+				and b.code= #{brandCode,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+				and c.type= #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and c.modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="allCode != null and allCode != ''">
+				and c.allCode= #{allCode,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and c.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by c.id desc
+		</if>
+	</select>
+	<select id="getCountInfraredCode" resultType="int">
+		select count(1)
+		from OTT_HARD_Code c
+		left outer join OTT_HARD_BRAND b on b.id=c.brandId
+		<where>
+			<if test="brandId != null and brandId != ''">
+				c.brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null and brandCode != ''">
+				and b.code= #{brandCode,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+				and c.type= #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and c.modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="allCode != null and allCode != ''">
+				and c.allCode= #{allCode,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and c.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="getInfraredCodeById" resultMap="InfraredCodeMap">
+		<![CDATA[ 
+			select c.*,b.name as brandName,b.code as brandCode from OTT_HARD_Code c
+				left outer join OTT_HARD_BRAND b on b.id=c.brandId
+		 	where c.id=#{id}
+		]]>
+	</select>
+
+	<!-- 修改红外码 -->
+	<update id="updateInfraredCode" parameterType="InfraredCode">
+		<![CDATA[ UPDATE OTT_HARD_Code SET 
+				brandId=#{brandId,jdbcType=VARCHAR},
+				type=#{type,jdbcType=VARCHAR},
+				modelName=#{modelName,jdbcType=VARCHAR},
+				codeFormat=#{codeFormat,jdbcType=VARCHAR},
+				clientCode=#{clientCode,jdbcType=VARCHAR},
+				keyName=#{keyName,jdbcType=VARCHAR},
+				keyCode=#{keyCode,jdbcType=VARCHAR},
+				allCode=#{allCode,jdbcType=VARCHAR},
+				sequence=#{sequence,jdbcType=VARCHAR}
+			where id=#{id}
+		]]>
+	</update>
+
+	<select id="findInfraredCodeByCond" resultMap="InfraredCodeMap">
+		select c.*,b.name as brandName,b.code as brandCode 
+		from OTT_HARD_Code c
+		left outer join OTT_HARD_BRAND b on b.id=c.brandId
+		left outer join OTT_HARD_MODEL m on m.number=c.modelName
+		<where>
+			<if test="brandId != null and brandId != ''">
+				c.brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null and brandCode != ''">
+				and b.code= #{brandCode,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+				and c.type= #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and c.modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="clientCode != null and clientCode != ''">
+				and c.clientCode= #{clientCode,jdbcType=VARCHAR}
+			</if>
+			<if test="keyName!= null and keyName!= ''">
+				and c.keyName= #{keyName,jdbcType=VARCHAR}
+			</if>
+			<if test="allCode != null and allCode != ''">
+				and c.allCode= #{allCode,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and c.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by c.id desc
+		</if>
+	</select>
+
+	<resultMap id="InfraredCodeMap2" type="InfraredCode">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="brandId" property="brandId" jdbcType="VARCHAR" />
+		<result column="brandName" property="brandName" jdbcType="VARCHAR" />
+		<result column="brandCode" property="brandCode" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="modelName" property="modelName" jdbcType="VARCHAR" />
+		<result column="codeFormat" property="codeFormat" jdbcType="VARCHAR" />
+		<result column="clientCode" property="clientCode" jdbcType="VARCHAR" />
+		<result column="keyName" property="keyName" jdbcType="VARCHAR" />
+		<result column="keyCode" property="keyCode" jdbcType="VARCHAR" />
+		<result column="allCode" property="allCode" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="modelSequence" property="modelSequence" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<select id="findInfraredCodeByCond2" resultMap="InfraredCodeMap2">
+		select c.*,b.name as brandName,b.code as brandCode, m.id as modelSequence
+		from OTT_HARD_Code c
+		left outer join OTT_HARD_BRAND b on b.id=c.brandId
+		left outer join OTT_HARD_MODEL m on m.number=c.modelName
+		where c.status='1' 
+			and m.BRANDID=c.brandId
+			and m.MACHTYPE=c.type
+			and b.code= #{brandCode,jdbcType=VARCHAR} 
+			and c.type= #{type,jdbcType=VARCHAR}
+			and  FIND_IN_SET(c.keyName, #{keyNameList,jdbcType=VARCHAR})
+		group by c.modelName,c.keyName,c.type,c.brandId 
+		order by m.id
+	</select>
+	
+	<update id="updateInfraredCodeStatus">
+		UPDATE OTT_HARD_Code SET status=#{status,jdbcType=VARCHAR} where id=#{id}
+	</update>
+	
+	<delete id="delInfraredCode">
+		DELETE FROM OTT_HARD_Code where id=#{id}
+	</delete>
+	
+	<delete id="delInfraredCodeList">
+		delete from OTT_HARD_Code where id in
+	     <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+	
+	<delete id="delInfraredCodeByCond">
+		DELETE FROM OTT_HARD_Code where brandId= #{brandId,jdbcType=VARCHAR}
+		and type= #{type,jdbcType=VARCHAR}
+		and modelName= #{modelName,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="addInfraredCodeList" parameterType="java.util.List" useGeneratedKeys="true">
+		INSERT INTO OTT_HARD_Code(brandId,type,modelName,codeFormat,clientCode,keyName,keyCode,allCode,sequence, status)
+		VALUES
+		 <foreach collection="list" item="item" index="index" separator="," >
+	        (
+			#{item.brandId,jdbcType=VARCHAR},
+			#{item.type,jdbcType=VARCHAR},
+			#{item.modelName,jdbcType=VARCHAR},
+			#{item.codeFormat,jdbcType=VARCHAR},
+			#{item.clientCode,jdbcType=VARCHAR},
+			#{item.keyName,jdbcType=VARCHAR},
+			#{item.keyCode,jdbcType=VARCHAR},
+			#{item.allCode,jdbcType=VARCHAR},
+			#{item.sequence,jdbcType=VARCHAR},
+			'1')
+	    </foreach>
+	</insert> 
+</mapper>

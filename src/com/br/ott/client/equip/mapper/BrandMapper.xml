@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.equip.mapper.BrandMapper">
+	<resultMap id="BrandMap" type="Brand">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="factory" property="factory" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="isRec" property="isRec" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 添加品牌 -->
+	<insert id="addBrand" parameterType="Brand">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_HARD_BRAND(name,status,code,factory,isRec)
+				VALUES(
+				#{name,jdbcType=VARCHAR},
+				'1',
+				#{code,jdbcType=VARCHAR},
+				#{factory,jdbcType=VARCHAR},
+				#{isRec,jdbcType=VARCHAR}
+				) 
+	</insert>
+
+	<!--分页查询所有品牌 -->
+	<select id="findBrandByPage" resultMap="BrandDetailMap">
+		select * from OTT_HARD_BRAND
+		<where>
+			<if test="name != null and name != ''">
+				name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="code != null and code != ''">
+				and code= #{code,jdbcType=VARCHAR}
+			</if>
+			<if test="factory != null and factory != ''">
+				and factory= #{factory,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+	<select id="getCountBrand" resultType="int">
+		select count(1) from OTT_HARD_BRAND
+		<where>
+			<if test="name != null and name != ''">
+				name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="code != null and code != ''">
+				and code= #{code,jdbcType=VARCHAR}
+			</if>
+			<if test="factory != null and factory != ''">
+				and factory= #{factory,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="BrandDetailMap" type="Brand">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="factory" property="factory" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="isRec" property="isRec" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<collection property="brandCommons" column="id" javaType="ArrayList" 
+					ofType="BrandCommon" select="com.br.ott.client.equip.mapper.BrandCommonMapper.findBrandCommonByBrandId"/>
+	</resultMap>
+	<select id="getBrandById" resultMap="BrandDetailMap">
+		<![CDATA[ 
+			select * from OTT_HARD_BRAND where id=#{id}
+		]]>
+	</select>
+
+	<!-- 修改品牌 -->
+	<update id="updateBrand" parameterType="Brand">
+		<![CDATA[ UPDATE OTT_HARD_BRAND SET 
+			name=#{name},
+			factory=#{factory},
+			code=#{code},
+			isRec=#{isRec}
+			where id=#{id}
+		]]>
+	</update>
+
+	<select id="findBrandByCond" resultMap="BrandMap">
+		select * from OTT_HARD_BRAND 
+		<where>
+			<if test="name != null and name != ''">
+				name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="code != null and code != ''">
+				and code= #{code,jdbcType=VARCHAR}
+			</if>
+			<if test="factory != null and factory != ''">
+				and factory= #{factory,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+
+	<select id="findBrandByName" resultMap="BrandMap">
+		select * from OTT_HARD_BRAND where name =#{name}
+	</select>
+</mapper>

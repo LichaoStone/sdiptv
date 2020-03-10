@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>应用版本下载量管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+#calendar()
+</head>
+<body>
+	<!--  快速转换位置按钮  -->
+	<div class="topline">
+    	<a href="#" class="xzbtn" style="color:#FFFFFF">应用版本下载量列表</a> | 
+        <a href="${ctx}/market/toAppLoads.do?marketId=$!{appLoads.marketId}" class="wxbtn">新增应用版本下载量</a>
+        <a href="${ctx}/market/findAppMarket.do" class="wxbtn">应用市场列表</a>
+	</div>
+	<form name="queryForm" id="queryForm" >
+	<!--  搜索表单  -->
+		<table border='0' cellpadding='0' cellspacing='0' style="margin-top:8px;">
+			<tr class="search">
+				<td>日期：<input type='text' name='recordTime' style="width:120px;" class="Wdate" value="$!{appLoads.recordTime}" onclick="WdatePicker()" readonly/></td>
+				<input type='hidden' id='marketId' name="marketId" value='$!{appLoads.marketId}'/>
+				<input type='hidden' id='orderColumn' name="orderColumn" value='$!{appLoads.orderColumn}'/>
+				<td><input id="queryLoads" type="image" src="${ctx}/images/button_search.gif"/></td>
+			</tr>
+		</table>
+		<!--  内容列表   -->
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="5" style="padding-left:8px;">
+					◆ 应用版本下载量&gt; 应用版本下载量列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+				<td width="25%">应用市场名称</td>
+				<td width="25%">应用版本号</td>
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="dayDownLoads" lastOrderBy="$!{appLoads.orderColumn}" class="tb_head">下载量</a></td>
+				<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="recordTime" lastOrderBy="$!{appLoads.orderColumn}" class="tb_head">日期</a></td>
+				<td width="10%">操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    			 <td colspan="5"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+			#foreach ($c in $list)
+				<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    				<td>$!{c.marketName}</td>
+    				<td>$!{c.version}</td>
+    				<td>$!{c.dayDownLoads}</td> 
+					<td>$!{c.recordTime}</td>
+    				<td>
+						<a  href="javascript:delAppLoads(this, '$!{c.id}');">删除</a>
+    				</td>
+    			</tr>
+             #end
+    	</table>
+    	<div height="36" align="right">
+            #pagination(${appLoads})
+        </div>
+</form>
+	<script type="text/javascript" src="${ctx}/js/ott/market/listAppLoads.js"></script>
+	</body>
+</html>

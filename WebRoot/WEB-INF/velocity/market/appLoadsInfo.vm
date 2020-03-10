@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>应用版本下载量信息</title>
+#tagLibs()
+#calendar()
+</head>
+<body>
+<div class="topline">
+	<a href="${ctx}/market/findAppLoads.do?marketId=$!{appLoads.marketId}" class="wxbtn">应用版本下载量列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF" >#if($!{appLoads.id}==""|| !${appLoads.id})新增应用版本下载量#else 修改应用版本下载量#end</a>
+</div>
+<form id="form1" name="form1" action="" method="post" >
+   <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="margin-top:13px;">
+      <tr>
+			<td>
+				<legend>客服信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">应用市场名称：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id"  name="id" value="$!{appLoads.id}"/> 
+								<input type="hidden" id="marketId"  name="marketId" value="$!{appLoads.marketId}"/> 
+								<input type="hidden" id="marketName"  name="marketName" value="$!{appLoads.marketName}"/>
+								$!{appLoads.marketName}
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">版本：</td>
+							<td class="pn-fcontent">
+								$!{appLoads.version}
+								<input type="hidden" id="version"  name="version" value="$!{appLoads.version}"/> 
+							</td>
+						</tr>
+						
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">日期：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="recordTime"  name="recordTime" value="$!{appLoads.recordTime}" onclick="WdatePicker()" readonly class="text-writer Wdate"/> 
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">下载量：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="dayDownLoads"  name="dayDownLoads" value="$!{appLoads.dayDownLoads}" class="text-writer"/> 
+								<em class="required">*</em>
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td style="margin-top:15px;margin-left:150px; ">
+        <button type="button" id="saveAppLoads" class="bt-primary" >确定</button>
+        <button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ott/market/appLoadsInfo.js"></script>
+</body>
+</html>

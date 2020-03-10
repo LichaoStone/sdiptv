@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>用户组频道</title>
+    <meta name="content-type" content="text/html; charset=UTF-8">
+<title></title>
+#tagLibs()
+</head>
+<body>
+<div class="topline">
+	<a href="#" class="xzbtn" style="color:#FFFFFF">用户组频道信息列表</a> | 
+    <a href="$!{ctx}/groupChannel/toGroupChannel.do" class="wxbtn">增加用户组频道信息</a>
+</div>
+<!--  内容列表   -->
+<form id="queryForm" method="get">
+ <table border='0' cellpadding='0' cellspacing='0' height="36">
+    <tr class="search">
+    	<td>所属运营商：<select name="operators" id="operators" style="width:120px;" onchange="changeOperators(this, 'groupCode');">
+      					<option value="" >=请选择=</option>
+      					#foreach($o in $olist)
+						<option value="${o.code}" #if (${o.code} == $!{groupChannel.operators}) selected #end>${o.name}</option>
+					#end
+				</select>
+		</td>
+		<td>所属用户组：<select name="groupCode" id="groupCode" style="width:120px;">
+      					<option value="" >=请选择=</option>
+      					#foreach($o in $ugList)
+						<option value="${o.groupCode}" #if (${o.groupCode} == $!{groupChannel.groupCode}) selected #end>${o.groupName}</option>
+					#end
+				</select>
+		</td>
+        <td>频道名称：<input type='text' id="channelName" name='channelName' value='$!{groupChannel.channelName}' style="width:120px;"/></td>
+		<td>
+			<input type="hidden" id="orderColumn" name="orderColumn" value="$!{groupChannel.orderColumn}" />
+            <img id="queryGroupChannel" type="image" src="$!{ctx}/images/button_search.gif"/>
+        </td>
+	</tr>
+</table>
+<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+            <tr bgcolor="#CFCFCF">
+            	<td height="28" colspan="7" style="padding-left:10px;">
+	◆ 用户组频道信息管理 &gt; 用户组频道信息列表
+	</td>
+</tr>
+<tr align="left" bgcolor="#eff2f7" height="30">
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="operators" lastOrderBy="$!{groupChannel.orderColumn}" class="tb_head">所属运营商</a></td>
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="groupCode" lastOrderBy="$!{groupChannel.orderColumn}" class="tb_head">所属用户组</a></td>
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="channelName" lastOrderBy="$!{groupChannel.orderColumn}" class="tb_head">频道名称</a></td>
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="localCid" lastOrderBy="$!{groupChannel.orderColumn}" class="tb_head">频道号</a></td>
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="sequence" lastOrderBy="$!{groupChannel.orderColumn}" class="tb_head">排序</a></td>
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{groupChannel.orderColumn}" class="tb_head">状态</a></td>
+		<td>操作</td>
+</tr>
+
+#if ($null.isNull($!groupChannels) || $!groupChannels.size()==0)
+	<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	 <td colspan="7"><h1>暂无相关数据内容</h1></td>
+    </tr>
+#end
+#foreach ($!c in $!groupChannels)
+<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+			<td >$!{c.operatorsName}</td>
+			<td >$!{c.groupName}</td>
+			<td >$!{c.channelName}</td>
+			<td >$!{c.localCid}</td>
+			<td >
+				<input type="text" class="text" name="sequence" align="center" data-id="$!{c.id}"  value="$!{c.sequence}" style="width:25px;"/>
+			</td>
+			<td >
+				#if($!{c.status}=='1')
+					启用
+				#else
+					停用
+				#end
+			</td>
+			<td>
+				<a href="$!{ctx}/groupChannel/toGroupChannel.do?id=$!{c.id}">编辑</a> |
+				#if($!{c.status}=='0')
+					<a href="javascript:updateChannelStatus(this, '$!{c.id}', '$!{c.status}');">启用</a>
+				#elseif($!{c.status}=='1')
+					<a href="javascript:updateChannelStatus(this, '$!{c.id}', '$!{c.status}');">停用</a>
+				#end
+			</td>
+</tr>
+#end
+</table>
+<div height="36" align="right">
+    #pagination($!{groupChannel})
+</div>
+</form>
+<table width="100%" border="0" cellpadding="2" cellspacing="1" bgcolor="#CFCFCF" align="center" style="margin-top:8px">
+    <tr bgcolor="#ffffff">
+    	<td> 
+             &nbsp;批量导入： 
+    		 <input id="fileGroupChannel" type="file" name="fileGroupChannel" class="text-writer9" onChange="checkFile(this,this.value)"/>
+			 <button type="button" id="inputExcel" class="bt-primary" style="margin-left:3px;">导入</button>
+			<a href="${ctx}/file/groupChannel.xls" target="_balnk" class="wxbtn">下载模板</a>
+        </td>
+    </tr>
+</table>
+<script type="text/javascript" src="${ctx}/js/jquery/ajaxfileupload.js"></script>
+<script type="text/javascript" src="${ctx}/js/ott/group/listGroupChannel.js"></script>
+</body>
+</html>

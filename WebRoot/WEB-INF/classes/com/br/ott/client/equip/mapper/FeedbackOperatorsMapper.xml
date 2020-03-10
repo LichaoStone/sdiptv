@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.equip.mapper.FeedbackOperatorsMapper">
+	<resultMap id="FeedbackOperatorsMap" type="FeedbackOperators">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="hardType" property="hardType" jdbcType="VARCHAR" />
+		<result column="brandName" property="brandName" jdbcType="VARCHAR" />
+		<result column="modelName" property="modelName" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="phoneModel" property="phoneModel" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="feedTime" property="feedTime"/>
+		<result column="feedMan" property="feedMan" jdbcType="VARCHAR" />
+		<result column="feedType" property="feedType" jdbcType="VARCHAR" />
+		<result column="feedContent" property="feedContent" jdbcType="VARCHAR" />
+		<result column="transactor" property="transactor" jdbcType="VARCHAR" />
+		<result column="doTime" property="doTime" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="province" property="province" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="operators" property="operators" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 添加反馈 -->
+	<insert id="addFeedbackOperators" parameterType="FeedbackOperators">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_FEEDBACK_Operators(province,city,operators,hardType,brandName,modelName,phoneModel,
+				address,feedTime,feedMan,feedType,feedContent,status)
+				VALUES(
+				#{province,jdbcType=VARCHAR},
+				#{city,jdbcType=VARCHAR},
+				#{operators,jdbcType=VARCHAR},
+				#{hardType,jdbcType=VARCHAR},
+				#{brandName,jdbcType=VARCHAR},
+				#{modelName,jdbcType=VARCHAR},
+				#{phoneModel,jdbcType=VARCHAR},
+				#{address,jdbcType=VARCHAR},
+				now(),
+				#{feedMan,jdbcType=VARCHAR},
+				#{feedType,jdbcType=VARCHAR},
+				#{feedContent,jdbcType=VARCHAR},
+				'0'
+				) 
+	</insert>
+
+	<!--分页查询所有反馈 -->
+	<select id="findFeedbackOperatorsByPage" resultMap="FeedbackOperatorsMap">
+		select fo.*
+		from OTT_FEEDBACK_Operators fo
+		<where>
+			<if test="hardType != null and hardType != ''">
+				fo.hardType= #{hardType,jdbcType=VARCHAR}
+			</if>
+			<if test="operators != null and operators != ''">
+				and fo.operators= #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="brandName != null and brandName != ''">
+				and fo.brandName= #{brandName,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and fo.modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="feedType != null and feedType != ''">
+				and fo.feedType= #{feedType,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and fo.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by fo.id desc
+		</if>
+	</select>
+	<select id="getCountFeedbackOperators" resultType="int">
+		select count(1)
+		from OTT_FEEDBACK_Operators fo
+		<where>
+			<if test="hardType != null and hardType != ''">
+				fo.hardType= #{hardType,jdbcType=VARCHAR}
+			</if>
+			<if test="operators != null and operators != ''">
+				and fo.operators= #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="brandName != null and brandName != ''">
+				and fo.brandName= #{brandName,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and fo.modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="feedType != null and feedType != ''">
+				and fo.feedType= #{feedType,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and fo.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="getFeedbackOperatorsById" resultMap="FeedbackOperatorsMap">
+		<![CDATA[ 
+			select fo.* from OTT_FEEDBACK_Operators fo where fo.id=#{id}
+		]]>
+	</select>
+
+	<update id="updateFeedbackOperators" parameterType="FeedbackOperators">
+		<![CDATA[ 
+		UPDATE OTT_FEEDBACK_Operators SET 
+			transactor=#{transactor},
+			remark=#{remark},
+			status=#{status},
+			doTime=now()
+			where id=#{id}
+		]]>
+	</update>
+	
+	<delete id="delFeedbackOperatorsById">
+		delete from OTT_FEEDBACK_Operators where id=#{id}
+	</delete>
+	
+	<delete id="delFeedbackOperatorsList">
+		delete from OTT_FEEDBACK_Operators where id in
+	     <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+	
+	<select id="findFeedbackOperatorsByCond" resultMap="FeedbackOperatorsMap">
+		select * from OTT_FEEDBACK_Operators 
+		<where>
+			<if test="hardType != null and hardType != ''">
+				hardType= #{hardType,jdbcType=VARCHAR}
+			</if>
+			<if test="area != null and area != ''">
+				and area= #{area,jdbcType=VARCHAR}
+			</if>
+			<if test="operators != null and operators != ''">
+				and operators= #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="brandName != null and brandName != ''">
+				and brandName= #{brandName,jdbcType=VARCHAR}
+			</if>
+			<if test="modelName != null and modelName != ''">
+				and modelName= #{modelName,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+</mapper>

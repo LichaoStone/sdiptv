@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.equip.mapper.AreaMapper">
+	<resultMap id="AreaMap" type="Area">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="parentId" property="parentId" jdbcType="VARCHAR" />
+		<result column="parentName" property="parentName" jdbcType="VARCHAR" />
+		<result column="isCapital" property="isCapital" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 添加区域 -->
+	<insert id="addArea" parameterType="Area">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_AREA(parentId,name,isCapital,status)
+				VALUES(
+				#{parentId,jdbcType=VARCHAR},
+				#{name,jdbcType=VARCHAR},
+				#{isCapital,jdbcType=VARCHAR},
+				'1'
+				) 
+	</insert>
+
+	<!--分页查询区域 -->
+	<select id="findAreaByPage" resultMap="AreaMap">
+		select a.id,a.name,a.isCapital,a.status,a.parentId,oa.name as parentName 
+		from OTT_AREA a
+			left outer join ott_area oa on oa.id=a.parentId
+		<where>
+			<if test="name != null and name != ''">
+				a.name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="isCapital != null and isCapital != ''">
+				and a.isCapital= #{isCapital,jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and a.parentId= #{parentId,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and a.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by a.id desc
+		</if>
+	</select>
+	<select id="getCountArea" resultType="int">
+		select count(1)
+		from OTT_AREA a
+			left outer join ott_area oa on oa.id=a.parentId
+		<where>
+			<if test="name != null and name != ''">
+				a.name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="isCapital != null and isCapital != ''">
+				and a.isCapital= #{isCapital,jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and a.parentId= #{parentId,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and a.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<select id="getAreaById" resultMap="AreaMap">
+		<![CDATA[ 
+			select id,name,isCapital,status,parentId,(select oa.name from ott_area oa where oa.id=a.parentId) as parentName from OTT_AREA a 
+			where id=#{id}
+		]]>
+	</select>
+
+	<!-- 修改区域 -->
+	<update id="updateArea" parameterType="Area">
+		<![CDATA[ UPDATE OTT_AREA SET 
+				name=#{name,jdbcType=VARCHAR},
+				isCapital=#{isCapital,jdbcType=VARCHAR},
+				parentId=#{parentId,jdbcType=VARCHAR}
+			where id=#{id}
+		]]>
+	</update>
+
+	<update id="updateAreaStatus">
+		UPDATE OTT_AREA SET status=#{status,jdbcType=VARCHAR} where id=#{id}
+	</update>
+	
+	<delete id="delArea">
+		delete from OTT_AREA where id=#{id}
+	</delete>
+	
+	<select id="findAreaByCond" resultMap="AreaMap">
+		select id,name,isCapital,status,parentId,(select oa.name from ott_area oa where oa.id=a.parentId) as parentName from OTT_AREA a
+		<where>
+			<if test="name != null and name != ''">
+				name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="isCapital != null and isCapital != ''">
+				and isCapital= #{isCapital,jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and parentId= #{parentId,jdbcType=VARCHAR}
+			</if>
+			<if test="second != null and second != ''">
+				and parentId != #{second,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id
+		</if>
+	</select>
+	
+	<select id="getAreaCapitalByName" resultMap="AreaMap">
+		select a.id,a.name,a.isCapital,a.status,a.parentId
+		from OTT_AREA a
+		left outer join ott_area oa on a.parentId=oa.parentId
+		where a.isCapital='1' and oa.name= #{name,jdbcType=VARCHAR}
+		limit 1
+	</select>
+</mapper>

@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>品牌红外码管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+	<!--  快速转换位置按钮  -->
+	<div class="topline">
+    	<a href="#" class="xzbtn" style="color:#FFFFFF">品牌红外码列表</a> | 
+        <a href="${ctx}/equip/toInfraredCode.do" class="wxbtn">新增品牌红外码</a>
+	</div>
+	<form name="queryForm" id="queryForm" >
+		<table border='0' cellpadding='0' cellspacing='0' style="margin-top:8px;">
+			<tr class="search">
+				<td>品牌：<select name="brandId" id="brandId" style="margin:2px 2px;width:120px;">
+        				<option value="">=请选择=</option>
+        					#foreach($p in $!brands)
+                                <option value="$!p.id" #if ($!{p.id} == $!{infraredCode.brandId}) selected #end>$!p.name</option>
+        					#end
+						</select>
+				</td>
+				<td>设备类型：<select name="type" id="type" style="margin:2px 2px;width:120px;" onchange="changeModel(this,'modelName');">
+        					<option value="" >=请选择=</option>
+        					#foreach($mt in $dicts)
+								<option value="${mt.dicValue}" #if (${mt.dicValue} == $!{infraredCode.type}) selected #end>${mt.dicName}</option>
+							#end
+						</select>
+				</td>
+				<td>设备型号：<select name="modelName" id="modelName" style="margin:2px 2px;width:120px;">
+    					<option value="" >=请选择=</option>
+    					#foreach($m in $!models)
+                            <option value="$!m.number" #if (${m.number} == $!{infraredCode.modelName}) selected #end>$!m.number</option>
+    					#end
+					</select>
+				</td>
+				<td><input id="queryCode" type="image" src="${ctx}/images/button_search.gif"/></td>
+				    <input type='hidden' id='orderColumn' name="orderColumn" value='$!{infraredCode.orderColumn}'/>
+			</tr>
+		</table>
+		<!--  内容列表   -->
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="10" style="padding-left:8px;">◆ 品牌红外码 &gt; 品牌红外码列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+				<td><input type="checkbox" id="allSelect" style="padding-top:5px;"  onclick="isCheckAll('arcID',this);"><label for="allSelect">全选</label></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="c.brandId" lastOrderBy="$!{infraredCode.orderColumn}" class="tb_head">品牌</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="c.type" lastOrderBy="$!{infraredCode.orderColumn}" class="tb_head">设备类型</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="c.modelName" lastOrderBy="$!{infraredCode.orderColumn}" class="tb_head">设备型号</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="c.codeFormat" lastOrderBy="$!{infraredCode.orderColumn}" class="tb_head">编码格式</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="c.clientCode" lastOrderBy="$!{infraredCode.orderColumn}" class="tb_head">客户码</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="c.keyName" lastOrderBy="$!{infraredCode.orderColumn}" class="tb_head">键值名</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="c.keyCode" lastOrderBy="$!{infraredCode.orderColumn}" class="tb_head">键值码</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="c.status" lastOrderBy="$!{infraredCode.orderColumn}" class="tb_head">状态</a></td>
+				<td>操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+        			 <td colspan="10"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+		   #foreach ($b in $!list)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    				<td><input type="checkbox" id="arcID" name="arcID" class="np" value="$!{b.id}"/></td>
+					<td>$!{b.brandName}</td> 
+    				<td>$!{b.typeName}</td> 
+					<td>$!{b.modelName}</td> 
+					<td>$!{b.codeFormat}</td> 
+					<td>$!{b.clientCode}</td> 
+					<td>$!{b.keyName}</td> 
+					<td>$!{b.keyCode}</td> 
+    				<td>#if($!{b.status} == '1') 启用  #else 停用 #end</td>
+    				<td>
+						<a href="${ctx}/equip/toInfraredCode.do?id=$!{b.id}">编辑</a> |
+						#if($!{b.status}=='0')
+							<a href="javascript:updateCodeStatus(this, '$!{b.id}', '$!{b.status}');">启用</a> |
+                		#else
+							<a href="javascript:updateCodeStatus(this, '$!{b.id}', '$!{b.status}');">停用</a> |
+						#end
+						<a href="javascript:delCode(this, '$!{b.id}');">删除</a>
+					</td>
+    			</tr>
+           #end
+		</table>
+		<div height="36" align="left">
+    		<a href="javascript:void(0);" class="wxbtn" id="delCode">批量删除</a>
+    	</div>
+		<div height="36" align="right">
+    		#pagination(${infraredCode})
+    	</div>
+</form>
+<table width="100%" border="0" cellpadding="2" cellspacing="1" bgcolor="#CFCFCF" align="center" style="margin-top:8px">
+    <tr bgcolor="#ffffff">
+    	<td> 
+             &nbsp;批量导入： 
+    		 <input id="fileCode" type="file" name="fileCode" class="text-writer9" onChange="checkFile(this,this.value)"/>
+			 <button type="button" id="inputExcel" class="bt-primary" style="margin-left:3px;">导入</button>
+			<a href="${ctx}/file/brandCode.xls" target="_balnk" class="wxbtn">下载模板</a>
+        </td>
+    </tr>
+</table>
+<div id="uploadImg" style="display:none; height:40px; width:40px; margin:30px auto;">
+	<img src="${ctx}/images/loadinglit.gif" style="width:30px; height:30px;"/>
+</div>
+<script type="text/javascript" src="${ctx}/js/jquery/ajaxfileupload.js"></script>
+<script type="text/javascript" src="${ctx}/js/ott/equip/listCode.js"></script>
+</body>
+</html>

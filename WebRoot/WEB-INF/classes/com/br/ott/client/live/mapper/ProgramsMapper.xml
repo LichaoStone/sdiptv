@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.ProgramsMapper">
+	<insert id="addPrograms" parameterType="Programs">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[
+		insert into ott_programs(name, channelId, fullName, basicName, playTime, timeLongth,playId,
+			 remark, createTime, operator,queue,status) 
+		values(#{name,jdbcType=VARCHAR},
+			#{channelId,jdbcType=VARCHAR},
+			#{fullName,jdbcType=VARCHAR},
+			#{basicName,jdbcType=VARCHAR},
+			#{playTime,jdbcType=VARCHAR},
+			#{timeLongth,jdbcType=VARCHAR},
+			#{playId,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR},
+			now(),
+			#{operator,jdbcType=VARCHAR},
+			#{queue},
+			'1')
+		]]>
+	</insert> 
+	
+	<update id="updateProgramDBPlay" parameterType="Programs">
+		update ott_programs set dbPlay=#{dbPlay,jdbcType=VARCHAR}
+		where basicName=#{basicName,jdbcType=VARCHAR} 
+			and channelId=#{channelId,jdbcType=VARCHAR}
+			and playTime=#{playTime,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updatePrograms" parameterType="Programs">
+		update ott_programs set name=#{name,jdbcType=VARCHAR},
+			channelId=#{channelId,jdbcType=VARCHAR},
+			fullName=#{fullName,jdbcType=VARCHAR},
+			playTime=#{playTime,jdbcType=VARCHAR},
+			timeLongth=#{timeLongth,jdbcType=VARCHAR},
+			playId=#{playId,jdbcType=VARCHAR},
+			remark=#{remark,jdbcType=VARCHAR},
+			queue=#{queue},
+			basicName=#{basicName,jdbcType=VARCHAR},
+			descImgUrl=#{descImgUrl,jdbcType=VARCHAR},
+			logoImgUrl=#{logoImgUrl,jdbcType=VARCHAR},
+			operator=#{operator,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateProgramSource" parameterType="Programs">
+		update ott_programs set 
+			serverId=#{serverId,jdbcType=VARCHAR},
+			sourceServer=#{sourceServer,jdbcType=VARCHAR},
+			fileAddr=#{fileAddr,jdbcType=VARCHAR},
+			rootDir=#{rootDir,jdbcType=VARCHAR},
+			playId=#{playId,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<resultMap id="ProgramsMap" type="Programs" > 
+		<id property="id" column="id"></id>
+		<result property="name" column="name"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="playTime" column="playTime"></result>
+		<result property="timeLongth" column="timeLongth"></result>
+		<result property="basicName" column="basicName"></result>
+		<result property="createTime" column="createTime"></result>
+		<result property="queue" column="queue"></result>
+		<result property="status" column="status"></result>
+	</resultMap> 
+	<select id="findProgramsByPage" resultMap="ProgramsMap">
+		select op.id, op.name, op.channelId,op.basicName, op.timeLongth,op.queue,op.status,
+			date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, date_format(op.createTime,'%Y-%m-%d %H:%i:%s') createTime
+		from ott_programs op
+		<where>
+			<if test="channelId !='' and channelId !=null">
+				 op.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(op.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+			<if test="status !='' and status !=null">
+				and op.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="basicName !='' and basicName !=null">
+				and op.basicName = #{basicName,jdbcType=VARCHAR}
+			</if>
+			<if test="name !='' and name !=null">
+				and op.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+			<if test="playTime !='' and playTime !=null">
+				and date_format(op.playTime,'%Y-%m-%d')=#{playTime,jdbcType=VARCHAR}
+			</if>
+			<if test="playNow !='' and playNow !=null">
+				and now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE)
+			</if>
+			<if test="playTimeMin != null and playTimeMin !=''">
+				and op.playTime >= str_to_date(#{playTimeMin,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</if>
+			<if test="playTimeMax != null and playTimeMax != ''">
+				<![CDATA[and op.playTime < str_to_date(#{playTimeMax,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by op.id desc
+		</if>
+	</select>
+	<select id="getCountPrograms" resultType="int">
+		select count(op.id) from ott_programs op
+		<where>
+			<if test="channelId !='' and channelId !=null">
+				 op.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(op.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+			<if test="status !='' and status !=null">
+				and op.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="basicName !='' and basicName !=null">
+				and op.basicName = #{basicName,jdbcType=VARCHAR}
+			</if>
+			<if test="name !='' and name !=null">
+				and op.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+			<if test="playTime !='' and playTime !=null">
+				and date_format(op.playTime,'%Y-%m-%d')=#{playTime,jdbcType=VARCHAR}
+			</if>
+			<if test="playNow !='' and playNow !=null">
+				and now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE)
+			</if>
+			<if test="playTimeMin != null and playTimeMin !=''">
+				and op.playTime >= str_to_date(#{playTimeMin,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</if>
+			<if test="playTimeMax != null and playTimeMax != ''">
+				<![CDATA[and op.playTime < str_to_date(#{playTimeMax,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="liveProgramsMap" type="Programs" > 
+		<id property="id" column="id"></id>
+		<result property="name" column="name"></result>
+		<result property="playTime" column="playTime"></result>
+		<result property="timeLongth" column="timeLongth"></result>
+		<result property="playId" column="playId"></result>
+		<result property="basicName" column="basicName"></result>
+		<result property="queue" column="queue"></result>
+		<result property="dbPlay" column="dbPlay"></result>
+	</resultMap> 
+	<select id="getLiveProgramsByChannelId" resultMap="liveProgramsMap">
+		select op.id, op.name, op.channelId, op.basicName,date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, 
+			op.timeLongth, op.playId, op.queue,op.dbPlay
+		from ott_programs op	
+		where op.channelId = #{channelId,jdbcType=VARCHAR}
+			and now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE)
+		limit 0,1
+	</select>
+	
+	<resultMap id="CProgramsMap" type="Programs" >
+		<id property="id" column="id"></id>
+		<result property="name" column="name"></result>
+		<result property="basicName" column="basicName"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="playTime" column="playTime"></result>
+		<result property="timeLongth" column="timeLongth"></result>
+		<result property="playId" column="playId"></result>
+		<result property="dbPlay" column="dbPlay"></result>
+		<result property="localCid" column="localCid"></result>
+		<result property="singleLiveServer" column="singleLiveServer"></result>
+		<result property="singleLiveServer2" column="singleLiveServer2"></result>
+		<result property="groupLiveServer" column="groupLiveServer"></result>
+		<result property="groupLiveServer2" column="groupLiveServer2"></result>
+	</resultMap>
+	<select id="findCProgramsByPageAndOperators" resultMap="CProgramsMap">
+		select op.id, op.name, op.channelId, op.basicName, date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, 
+			op.timeLongth, op.playId,op.queue,op.dbPlay,oc.channelName, oc.singleLiveServer,oc.singleLiveServer2,
+			oc.groupLiveServer,oc.groupLiveServer2,oc.playChannelId as localCid
+		from ott_programs op
+			left outer join ott_operators_channel oc on oc.channelId=op.channelId
+		<where>
+			<if test="channelId !='' and channelId !=null">
+				 op.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(op.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+			<if test="status !='' and status !=null">
+				and op.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and oc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="name !='' and name !=null">
+				and op.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+			<if test="playTime !='' and playTime !=null">
+				and date_format(op.playTime,'%Y-%m-%d')=#{playTime,jdbcType=VARCHAR}
+			</if>
+			<if test="playNow !='' and playNow !=null">
+				and now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE)
+			</if>
+			<if test="playTimeMin != null and playTimeMin !=''">
+				and op.playTime >= str_to_date(#{playTimeMin,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</if>
+			<if test="playTimeMax != null and playTimeMax != ''">
+				<![CDATA[and op.playTime < str_to_date(#{playTimeMax,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+		group by op.name,op.playTime
+		<if test="orderColumn != null and orderColumn !=''">
+			  order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by op.id desc
+		</if>
+	</select>
+	<select id="getCountCProgramsOperators" resultType="int">
+		select count(1) from (select op.id
+		from ott_programs op
+			left outer join ott_operators_channel pc on pc.channelId=op.channelId
+		<where>
+			<if test="channelId !='' and channelId !=null">
+				 op.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(op.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+			<if test="status !='' and status !=null">
+				and op.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and pc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="basicName !='' and basicName !=null">
+				and op.basicName = #{basicName,jdbcType=VARCHAR}
+			</if>
+			<if test="name !='' and name !=null">
+				and op.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+			<if test="playTime !='' and playTime !=null">
+				and date_format(op.playTime,'%Y-%m-%d')=#{playTime,jdbcType=VARCHAR}
+			</if>
+			<if test="playNow !='' and playNow !=null">
+				and now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE)
+			</if>
+			<if test="playTimeMin != null and playTimeMin !=''">
+				and op.playTime >= str_to_date(#{playTimeMin,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')
+			</if>
+			<if test="playTimeMax != null and playTimeMax != ''">
+				<![CDATA[and op.playTime < str_to_date(#{playTimeMax,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+		group by op.name,op.playTime) temp
+	</select>
+	
+	<select id="getCountProgramsByCreateTime" resultType="int">
+		select count(1) from ott_programs where date_format(createTime,'%Y-%m-%d')=#{createTime,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findProgramsByCond" resultMap="ProgramsMap">
+		select id, name, channelId, fullName, basicName, logoImgUrl, descImgUrl,
+			date_format(playTime,'%Y-%m-%d %H:%i') playTime, timeLongth,playId, remark,queue,  
+			date_format(createTime,'%Y-%m-%d %H:%i:%s') createTime, operator, status
+		from ott_programs
+		<where>
+			<if test="status !='' and status !=null">
+				status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="channelId !='' and channelId !=null">
+				and channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="name !='' and name !=null">
+				and name = #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="basicName !='' and basicName !=null">
+				and basicName = #{basicName,jdbcType=VARCHAR}
+			</if>
+			<if test="playTime !='' and playTime !=null">
+				and date_format(playTime,'%Y-%m-%d')=#{playTime,jdbcType=VARCHAR}
+			</if>
+			<if test="playTimeMin != null and playTimeMin !=''">
+				and playTime >= str_to_date(#{playTimeMin,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			<if test="playTimeMax != null and playTimeMax != ''">
+				<![CDATA[and playTime < DATE_ADD( str_to_date(#{playTimeMax,jdbcType=VARCHAR},'%Y-%m-%d'), INTERVAL 1 DAY)]]>
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by id desc
+		</if>
+	</select>
+	
+	<resultMap id="cProgramsMap" type="Programs">
+		<id property="id" column="id"></id>
+		<result property="name" column="name"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="playTime" column="playTime"></result>
+		<result property="timeLongth" column="timeLongth"></result>
+		<result property="channelName" column="cName"></result>
+	</resultMap>
+	<select id="findProgramsByCid" resultMap="cProgramsMap">
+		select op.id, op.name, op.channelId,date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, op.timeLongth,oc.name as cName
+		from ott_programs op
+		left outer join ott_channel oc on oc.id=op.channelId and oc.status='1'
+		<where>
+			<if test="cid !='' and cid !=null">
+				and oc.cid = #{cid,jdbcType=VARCHAR}
+			</if>
+			<if test="playTimeMin != null and playTimeMin !=''">
+				and op.playTime >= str_to_date(#{playTimeMin,jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			<if test="playTimeMax != null and playTimeMax != ''">
+				<![CDATA[and op.playTime < DATE_ADD( str_to_date(#{playTimeMax,jdbcType=VARCHAR},'%Y-%m-%d'), INTERVAL 1 DAY)]]>
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by op.playTime
+		</if>
+	</select>
+	
+	<resultMap id="RecCProgramsMap" type="Programs" >
+		<id property="id" column="id"></id>
+		<result property="name" column="name"></result>
+		<result property="basicName" column="basicName"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="logoImgUrl" column="logoUrl"></result>
+		<result property="wlogoUrl" column="wlogoUrl"></result>
+		<result property="hlogoUrl" column="hlogoUrl"></result>
+		<result property="playTime" column="playTime"></result>
+		<result property="timeLongth" column="timeLongth"></result>
+		<result property="playId" column="playId"></result>
+		<result property="dbPlay" column="dbPlay"></result>
+		<result property="queue" column="queue"></result>
+		<result property="localCid" column="localCid"></result>
+		<result property="singleLiveServer" column="singleLiveServer"></result>
+		<result property="singleLiveServer2" column="singleLiveServer2"></result>
+		<result property="groupLiveServer" column="groupLiveServer"></result>
+		<result property="groupLiveServer2" column="groupLiveServer2"></result>
+	</resultMap>
+	<select id="findCProgramByPageAndRec" resultMap="RecCProgramsMap">
+		select op.id, op.name,op.basicName,op.queue,op.channelId, rc.logoUrl,rc.wlogoUrl,rc.hlogoUrl,
+			date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, op.timeLongth, op.playId,op.dbPlay,
+			oc.channelName, oc.singleLiveServer,oc.singleLiveServer2,
+			oc.groupLiveServer,oc.groupLiveServer2,oc.playChannelId as localCid
+		from ott_programs op
+			left outer join ott_rec_channel rc on rc.channelId=op.channelId and rc.status='1'
+			left outer join ott_operators_channel oc on oc.channelId=op.channelId and oc.status ='1' and rc.operators=oc.operators
+		<where>
+			<if test="rcType !='' and rcType !=null">
+				rc.type = #{rcType,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and rc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="playNow !='' and playNow !=null">
+				and now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE)
+			</if>
+		</where>
+		group by op.channelId
+		<if test="orderColumn != null and orderColumn !=''">
+			  order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by rc.sequence
+		</if>
+	</select>
+	
+	<select id="getProgramsById" resultType="Programs">
+		select id, name, channelId, fullName, basicName, logoImgUrl, descImgUrl,
+			(select c.name from ott_channel c where c.id=op.channelId) channelName,dbPlay,
+			date_format(playTime,'%Y-%m-%d %H:%i') playTime, timeLongth,playId, remark,queue, 
+			date_format(createTime,'%Y-%m-%d %H:%i:%s') createTime, operator, status
+		from ott_programs op where op.id=#{id, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getLiveProgramByName" resultType="Programs">
+		select op.id, op.name, op.channelId, op.basicName,
+			date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, op.timeLongth,op.queue
+		from ott_programs op 
+		where op.name like CONCAT(CONCAT('%', #{name,jdbcType=VARCHAR} ,'%')) 
+		and (now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE) 
+				or op.playTime BETWEEN str_to_date(#{playTimeMin,jdbcType=VARCHAR},'%Y-%m-%d %H:%i') and now() )
+		group by op.name,op.playTime
+		order by op.playTime desc
+		limit 1
+	</select>
+	
+	<select id="getProgramsByCidAndName" resultType="Programs">
+		select op.id, op.name, op.channelId, op.fullName, op.basicName,
+			date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, op.timeLongth,op.queue,
+			oc.name as channelName
+		from ott_programs op 
+		left outer join ott_channel oc on oc.id=op.channelId
+		where oc.cid=#{cid,jdbcType=VARCHAR} 
+			and op.name=#{name,jdbcType=VARCHAR}
+			and date_format(op.playTime,'%Y%m%d%H:%i')=#{playTime,jdbcType=VARCHAR}
+	</select>
+	<!-- 批量操作 -->
+	<insert id="addProgramsByList" parameterType="java.util.List" useGeneratedKeys="true">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		INSERT INTO ott_programs (name, channelId, fullName, basicName, playTime, timeLongth,playId, remark, createTime, operator,queue, status)
+		VALUES 
+		 <foreach collection="list" item="item" index="index" separator="," >
+	        (#{item.name,jdbcType=VARCHAR},
+			#{item.channelId,jdbcType=VARCHAR},
+			#{item.fullName,jdbcType=VARCHAR},
+			#{item.basicName,jdbcType=VARCHAR},
+			#{item.playTime,jdbcType=VARCHAR},
+			#{item.timeLongth,jdbcType=VARCHAR},
+			#{item.playId,jdbcType=VARCHAR},
+			#{item.remark,jdbcType=VARCHAR},
+			now(),
+			#{item.operator,jdbcType=VARCHAR},
+			#{item.queue},
+			'1')
+	    </foreach>
+	</insert>
+	
+	<insert id="addProgramsByMap" parameterType="java.util.Map">
+		INSERT INTO ott_programs (name, channelId, playTime, timeLongth, createTime,queue, status)
+		VALUES 
+		 <foreach collection="channelList" item="item" index="index" separator="," >
+	        (#{item.name,jdbcType=VARCHAR},
+			#{item.channelId,jdbcType=VARCHAR},
+			#{item.playTime,jdbcType=VARCHAR},
+			#{item.timeLongth,jdbcType=VARCHAR},
+			now(),
+			#{item.queue},
+			'1')
+	    </foreach>
+	</insert>
+	
+	<!-- 按频道删除当天历史数据 -->
+	<delete id="delProgramsByCidAndToday">
+		delete from ott_programs where channelId=#{channelId,jdbcType=VARCHAR}
+		 and date(playTime) = curdate();  
+	</delete>
+	
+	<!-- 按频道删除七天前历史数据 -->
+	<delete id="delProgramBy7Date">
+		delete from ott_programs where channelId=#{channelId,jdbcType=VARCHAR} 
+		<![CDATA[ and playTime <DATE_SUB(str_to_date(#{playTime,jdbcType=VARCHAR},'%Y-%m-%d'), INTERVAL 7 DAY)]]> 
+	</delete>
+	
+	<!-- 按频道与指定天删除历史数据 -->
+	<delete id="delProgramsByCidAndDate">
+		delete from ott_programs where channelId=#{channelId,jdbcType=VARCHAR} 
+		and date_format(playTime,'%Y-%m-%d')=#{playTime,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 按指定天删除历史数据 -->
+	<delete id="delProgramsByDate">
+		delete from ott_programs where date_format(playTime,'%Y-%m-%d')=#{playTime,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 删除指定天历史数据 并大于当前时间的数据-->
+	<delete id="delProgramsByDateMore">
+		delete from ott_programs where date_format(playTime,'%Y%m%d')=#{playTime,jdbcType=VARCHAR}
+		<![CDATA[  and playTime > now()]]> 
+	</delete>
+	
+	<!-- 按频道与指定天删除历史数据 并大于当前时间的数据-->
+	<delete id="delProgramsByCidAndDateMore">
+		delete from ott_programs where channelId=#{channelId,jdbcType=VARCHAR}  
+			and date_format(playTime,'%Y%m%d')=#{playTime,jdbcType=VARCHAR}
+			<![CDATA[  and playTime > now()]]> 
+	</delete>
+	
+	<!-- 按条件删除节目 -->
+	<delete id="delProgramsByCond">
+		delete from ott_programs where channelId=#{channelId,jdbcType=VARCHAR}
+		and name=#{name,jdbcType=VARCHAR}
+		and playTime=#{playTime,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="delProgramsList">
+		delete from ott_programs where id in
+		 <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+	
+	<update id="updatePorgramsStatus">
+		update ott_programs set status=#{status,jdbcType=VARCHAR} where id=#{id, jdbcType=INTEGER}
+	</update>
+</mapper>

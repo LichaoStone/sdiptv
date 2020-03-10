@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>型号管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+	<!--  快速转换位置按钮  -->
+	<div class="topline">
+    	<a href="#" class="xzbtn" style="color:#FFFFFF">硬件型号列表</a> | 
+        <a href="${ctx}/equip/toHardModel.do" class="wxbtn">新增硬件型号</a>
+	</div>
+	<form name="queryForm" id="queryForm" >
+	<!--  搜索表单  -->
+		<table border='0' cellpadding='0' cellspacing='0' style="margin-top:8px;">
+			<tr class="search">
+				<td>品牌：<select name="brandId" id="brandId" style="margin:2px 2px;width:154px;">
+        				<option value="">=请选择=</option>
+        					#foreach($p in $!brands)
+                                <option value="$!p.id" #if (${p.id} == $!{m.brandId}) selected #end>$!p.name</option>
+        					#end
+						</select>
+				</td>
+				<td>硬件类型：<select name="machType" id="machType" style="width:154px">
+							<option value="" >=请选择=</option>
+        					#foreach($mt in $dicts)
+								<option value="${mt.dicValue}" #if (${mt.dicValue} == $!{m.machType}) selected #end>${mt.dicName}</option>
+							#end
+						</select>
+				</td>
+				<td>硬件型号：<input type='text' name='number' value="$!{m.number}"/>
+				          <input type='hidden' id='orderColumn' name="orderColumn" value='$!{m.orderColumn}'/>
+				</td>
+				<td><input id="queryType" type="image" src="${ctx}/images/button_search.gif"/></td>
+			</tr>
+		</table>
+		<!--  内容列表   -->
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="8" style="padding-left:8px;">
+					◆ 硬件型号 &gt; 硬件型号列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+				<td width="5%"><input type="checkbox" id="allSelect" style="padding-top:5px;"  onclick="isCheckAll('arcID',this);"><label for="allSelect">全选</label></td>
+				<td width="12%"><a href="javascript:void(0);" onclick="orderBy(this);" name="m.brandId" lastOrderBy="$!{m.orderColumn}" class="tb_head">所属品牌</a></td>
+				<td width="12%"><a href="javascript:void(0);" onclick="orderBy(this);" name="m.number" lastOrderBy="$!{m.orderColumn}" class="tb_head">硬件型号</a></td>
+				<td width="12%"><a href="javascript:void(0);" onclick="orderBy(this);" name="m.machType" lastOrderBy="$!{m.orderColumn}" class="tb_head">硬件类型</a></td>
+				<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="m.systemName" lastOrderBy="$!{m.orderColumn}" class="tb_head">操作系统</a></td>
+				<td width="8%"><a href="javascript:void(0);" onclick="orderBy(this);" name="m.sequence" lastOrderBy="$!{m.orderColumn}" class="tb_head">排序</a></td>
+				<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="m.status" lastOrderBy="$!{m.orderColumn}" class="tb_head">状态</a></td>
+				<td width="15%">操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    			 <td colspan="8"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+			#foreach ($type in $list)
+				<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+					<td><input type="checkbox" id="arcID" name="arcID" class="np" value="$!{type.id}"/></td>
+    				<td>$!{type.brandName}</td>
+    				<td>$!{type.number}</td> 
+					<td>$!{type.machTypeName}</td> 
+    				<td>$!{type.systemName}</td>
+					<td>$!{type.sequence}</td>
+    				<td>
+    					#if('1'==$!{type.status})
+                			已启用
+                		#elseif('0'==$!{type.status})
+                			已停用
+                		#elseif('2'==$!{type.status})
+                			待完善
+                		#end
+					</td>
+    				<td>
+						<a href="${ctx}/equip/toHardModel.do?id=$!{type.id}">修改</a> |
+						<a href="javascript:toInfraredCode(this, '$!{type.brandId}', '$!{type.machType}','$!{type.number}');">红外码</a> |
+						#if($!{type.status}=='0')
+							<a href="javascript:updateModelStatus(this, '$!{type.id}', '$!{type.status}');">启用</a> |
+                		#elseif($!{type.status}=='1')
+							<a href="javascript:updateModelStatus(this, '$!{type.id}', '$!{type.status}');">停用</a> |
+						#elseif($!{type.status}=='2')
+                			<a href="javascript:updateModelStatus(this, '$!{type.id}', '$!{type.status}');">完善</a> |
+						#end
+						<a href="javascript:delModel(this, '$!{type.id}');">删除</a> 
+    				</td>
+    			</tr>
+             #end
+    	</table>
+		<div height="36" align="left">
+    		<a href="javascript:void(0);" class="wxbtn" id="delModel">批量删除</a>
+    	</div>
+    	<div height="36" align="right">
+            #pagination(${m})
+        </div>
+</form>
+</body>
+	<script type="text/javascript" src="${ctx}/js/ott/equip/listModel.js"></script>
+</html>

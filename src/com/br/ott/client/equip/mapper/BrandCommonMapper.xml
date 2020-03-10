@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.equip.mapper.BrandCommonMapper">
+	<resultMap id="BrandCommonMap" type="BrandCommon">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="brandId" property="brandId" jdbcType="VARCHAR" />
+		<result column="brandName" property="brandName" jdbcType="VARCHAR" />
+		<result column="machType" property="machType" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="INTEGER" />
+	</resultMap>
+
+	<!-- 添加常用品牌 -->
+	<insert id="addBrandCommon" parameterType="BrandCommon">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_BRAND_COMMON(brandId,machType,sequence)
+				VALUES(
+				#{brandId,jdbcType=VARCHAR},
+				#{machType,jdbcType=VARCHAR},
+				#{sequence,jdbcType=INTEGER}
+				) 
+	</insert>
+	
+	<update id="updateBrandCommon">
+		update OTT_BRAND_COMMON set 
+			brandId=#{brandId,jdbcType=VARCHAR},
+			machType=#{machType,jdbcType=VARCHAR},
+			sequence=#{sequence,jdbcType=INTEGER}
+		where id=#{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="getBrandCommonById" resultMap="BrandCommonMap">
+		select bc.*,(select b.name from ott_hard_brand b where b.id=bc.brandId) as brandName 
+		from OTT_BRAND_Common bc
+		where id=#{id}
+	</select>
+	
+	<select id="findBrandCommonByPage" resultMap="BrandCommonMap">
+		select bc.*,b.name as brandName 
+		from OTT_BRAND_Common bc
+			left outer join ott_hard_brand b on b.id=bc.brandId
+		<where>
+			<if test="brandId != null and brandId != ''">
+				bc.brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="machType != null and machType != ''">
+				and bc.machType= #{machType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<select id="getCountBrandCommon" resultType="int">
+		select count(1) from OTT_BRAND_Common bc
+		<where>
+			<if test="brandId != null and brandId != ''">
+				bc.brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="machType != null and machType != ''">
+				and bc.machType= #{machType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findBrandCommonByCond" resultMap="BrandCommonMap">
+		select bc.*,(select b.name from ott_hard_brand b where b.id=bc.brandId) as brandName 
+		from OTT_BRAND_Common bc
+		<where>
+			<if test="brandId != null and brandId != ''">
+				brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="machType != null and machType != ''">
+				and machType= #{machType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findBrandCommonByBrandId" resultMap="BrandCommonMap">
+		select bc.*,(select b.name from ott_hard_brand b where b.id=bc.brandId) as brandName 
+		from OTT_BRAND_Common bc
+		where brandId= #{brandId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteBrandCommonByBrandId">
+		delete from OTT_BRAND_COMMON where brandId= #{brandId,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteBrandCommonById">
+		delete from OTT_BRAND_COMMON where id=#{id}
+	</delete>
+	
+	<delete id="delBrandCommonList">
+		delete from OTT_BRAND_COMMON where id in
+	     <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+</mapper>

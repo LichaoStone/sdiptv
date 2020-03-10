@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.BasicProgramMapper">
+	
+	<resultMap id="BasicProgramMap" type="BasicProgram" > 
+		<id property="id" column="id"></id>
+		<result property="name" column="name"></result>
+		<result property="cProvider" column="cProvider"></result>
+		<result property="pcode" column="pcode"></result>
+		<result property="bitrate" column="bitrate"></result>
+		<result property="otherName" column="otherName"></result>
+		<result property="version" column="version"></result>
+		<result property="origin" column="origin"></result>
+		<result property="language" column="language"></result>
+		<result property="playyear" column="playyear"></result>
+		<result property="director" column="director"></result>
+		<result property="actor" column="actor"></result>
+		<result property="compere" column="compere"></result>
+		<result property="ptype" column="ptype"></result>
+		<result property="ttype" column="ttype"></result>
+		<result property="keyword" column="keyword"></result>
+		<result property="timeLongth" column="timeLongth"></result>
+		<result property="playUrl" column="playUrl"></result>
+		<result property="remark" column="remark"></result>
+		<result property="ztype" column="ztype"></result>
+		<result property="logoImgUrl" column="logoImgUrl"></result>
+		<result property="descImgUrl" column="descImgUrl"></result>
+		<result property="createTime" column="createTime"></result>
+		<result property="operator" column="operator"></result>
+		<result property="status" column="status"></result>
+		<result property="logoImgUrl" column="cLogoUrl"></result>
+		<result property="descImgUrl" column="cDescImgUrl"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="specialName" column="specialName"></result>
+	</resultMap> 
+	
+	<select id="findBasicProgramByPage" resultMap="BasicProgramMap">
+		select id, name, specialName, ptype, ttype, timeLongth,
+		date_format(createTime,'%Y-%m-%d %H:%i:%s') createTime, status
+		from basicprogram
+		<where>
+			<if test="status !='' and status !=null">
+				and status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="ptype !='' and ptype !=null">
+				and ptype = #{ptype,jdbcType=VARCHAR}
+			</if>
+			<if test="ttype !='' and ttype !=null">
+				and ttype = #{ttype,jdbcType=VARCHAR}
+			</if>
+			<if test="name !='' and name !=null">
+				and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by id desc
+		</if>
+	</select>
+	<select id="getCountBasicProgram" resultType="int">
+		select count(id) from basicprogram
+		<where>
+			<if test="status !='' and status !=null">
+				and status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="ptype !='' and ptype !=null">
+				and ptype = #{ptype,jdbcType=VARCHAR}
+			</if>
+			<if test="ttype !='' and ttype !=null">
+				and ttype = #{ttype,jdbcType=VARCHAR}
+			</if>
+			<if test="name !='' and name !=null">
+				and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+		</where>
+	</select>
+	
+	<insert id="addBasicProgram" parameterType="BasicProgram">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[
+		insert into basicprogram(name, ptype,ttype,otherName, cProvider,playyear,language,pcode,bitrate,
+		 version,origin,director,ztype,actor,compere,keyword,timeLongth,playUrl, 
+		 logoImgUrl,descImgUrl,remark,channelId,createTime, operator,specialName,status) 
+		values(#{name,jdbcType=VARCHAR},
+			#{ptype,jdbcType=VARCHAR},
+			#{ttype,jdbcType=VARCHAR},
+			#{otherName,jdbcType=VARCHAR},
+			#{cProvider,jdbcType=VARCHAR},
+			#{playyear,jdbcType=VARCHAR},
+			#{language,jdbcType=VARCHAR},
+			#{pcode,jdbcType=VARCHAR},
+			#{bitrate,jdbcType=VARCHAR},
+			#{version,jdbcType=VARCHAR},
+			#{origin,jdbcType=VARCHAR},
+			#{director,jdbcType=VARCHAR},
+			#{ztype,jdbcType=VARCHAR},
+			#{actor,jdbcType=VARCHAR},
+			#{compere,jdbcType=VARCHAR},
+			#{keyword,jdbcType=VARCHAR},
+			#{timeLongth,jdbcType=VARCHAR},
+			#{playUrl,jdbcType=VARCHAR},
+			#{logoImgUrl,jdbcType=VARCHAR},
+			#{descImgUrl,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR},
+			#{channelId,jdbcType=VARCHAR},
+			now(),
+			#{operator,jdbcType=VARCHAR},
+			#{specialName,jdbcType=VARCHAR},
+			'1')
+		]]>
+	</insert> 
+	
+	<select id="getBasicProgramById" resultType="BasicProgram">
+		select id,name, ptype,ttype,otherName, cProvider,playyear,language,pcode,bitrate,
+		 version,origin,director,ztype,actor,compere,keyword,specialName,
+		 timeLongth,playUrl, logoImgUrl,descImgUrl,remark,channelId, operator, status 
+		from basicprogram where id=#{id, jdbcType=INTEGER}
+	</select>
+
+	<update id="updateBasicProgram" parameterType="BasicProgram">
+		update basicprogram set name=#{name,jdbcType=VARCHAR},
+			ptype=#{ptype,jdbcType=VARCHAR},
+			ttype=#{ttype,jdbcType=VARCHAR},
+			otherName=#{otherName,jdbcType=VARCHAR},
+			cProvider=#{cProvider,jdbcType=VARCHAR},
+			playyear=#{playyear,jdbcType=VARCHAR},
+			language=#{language,jdbcType=VARCHAR},
+			pcode=#{pcode,jdbcType=VARCHAR},
+			bitrate=#{bitrate,jdbcType=VARCHAR},
+			version=#{version,jdbcType=VARCHAR},
+			origin=#{origin,jdbcType=VARCHAR},
+			director=#{director,jdbcType=VARCHAR},
+			ztype=#{ztype,jdbcType=VARCHAR},
+			actor=#{actor,jdbcType=VARCHAR},
+			compere=#{compere,jdbcType=VARCHAR},
+			keyword=#{keyword,jdbcType=VARCHAR},
+			timeLongth=#{timeLongth,jdbcType=VARCHAR},
+			playUrl=#{playUrl,jdbcType=VARCHAR},
+			logoImgUrl=#{logoImgUrl,jdbcType=VARCHAR},
+			descImgUrl=#{descImgUrl,jdbcType=VARCHAR},
+			remark=#{remark,jdbcType=VARCHAR},
+			operator=#{operator,jdbcType=VARCHAR},
+			specialName=#{specialName,jdbcType=VARCHAR},
+			channelId=#{channelId,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<select id="findBasicProgramByName" resultMap="BasicProgramMap">
+		select id,name, ptype,ttype,otherName, cProvider,playyear,language,pcode,bitrate,
+		 version,origin,director,ztype,actor,compere,keyword,specialName,
+		 timeLongth,playUrl, logoImgUrl,descImgUrl,remark,channelId, operator, status 
+		from basicprogram where name like CONCAT(CONCAT('%', #{name}),'%')
+	</select>
+
+	<select id="findBProgramByName" resultMap="BasicProgramMap">
+		select id,name, ptype,ttype,otherName, cProvider,playyear,language,pcode,bitrate,
+		 version,origin,director,ztype,actor,compere,keyword,specialName,
+		 timeLongth,playUrl, logoImgUrl,descImgUrl,remark,channelId, operator, status
+		from basicprogram where name=#{name,jdbcType=VARCHAR}
+	</select>
+	
+	<resultMap type="BasicCProgram" id="BasicCProgramMap">
+		<id property="programId" column="id"></id>
+		<result property="programName" column="name"></result>
+		<result property="playTime" column="playTime"></result>
+		<result property="timeLongth" column="timeLongth"></result>
+		<result property="queue" column="queue"></result>
+		<result property="playId" column="playId"></result>
+		<result property="dbPlay" column="dbPlay"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="groupLiveServer2" column="groupLiveServer2"></result>
+		<result property="groupLiveServer" column="groupLiveServer"></result>
+		<result property="singleLiveServer" column="singleLiveServer"></result>
+		<result property="singleLiveServer2" column="singleLiveServer2"></result>
+		<result property="specialName" column="specialName"></result>
+		<result property="basicName" column="basicName"></result>
+		<result property="logoImgUrl" column="logoImgUrl"></result>
+	</resultMap>
+	
+	<select id="findBasicCProgramByPage" resultMap="BasicCProgramMap">
+		select op.id, op.name, date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, op.timeLongth, op.channelId,op.queue,op.playId,
+			pc.channelName as channelName, bp.specialName,pc.playChannelId as localCid,op.basicName,op.dbPlay,
+			pc.singleLiveServer,pc.singleLiveServer2,pc.groupLiveServer,pc.groupLiveServer2
+			from ott_programs op
+				left outer join basicprogram bp on op.basicName=bp.name
+				left outer join ott_operators_channel pc on pc.channelId=op.channelId
+			where pc.status='1'
+				and op.status='1'
+				and	bp.ptype = #{ptype,jdbcType=VARCHAR}
+				and pc.operators=#{operators,jdbcType=VARCHAR}
+				and op.playTime BETWEEN now() and str_to_date(#{playTimeMax,jdbcType=VARCHAR},'%Y-%m-%d %H:%i')
+			group by op.playTime,op.id
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			  order by id desc
+		</if>
+	</select>
+	<select id="getCountBasicCProgram" resultType="int">
+		select count(1) from (select op.id
+			from ott_programs op
+				left outer join basicprogram bp on op.basicName=bp.name
+				left outer join ott_operators_channel pc on pc.channelId=op.channelId
+			where pc.status='1'
+				and op.status='1'
+				and	bp.ptype = #{ptype,jdbcType=VARCHAR}
+				and pc.operators=#{operators,jdbcType=VARCHAR}
+				and op.playTime BETWEEN now() and str_to_date(#{playTimeMax,jdbcType=VARCHAR},'%Y-%m-%d %H:%i')
+			group by op.playTime,op.id) temp
+	</select>
+	
+	<select id="findBasicHotProgramByPage" resultMap="BasicCProgramMap">
+		select a.* from (
+		select op.id, op.name, date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, op.timeLongth,op.channelId,op.queue, 
+				op.playId,pc.channelName as channelName, bp.specialName,pc.playChannelId as localCid,op.basicName,bp.logoImgUrl,
+				op.dbPlay,pc.singleLiveServer,pc.singleLiveServer2,pc.groupLiveServer,pc.groupLiveServer2
+			from ott_programs op ,basicprogram bp,ott_operators_channel pc
+			where op.basicName=bp.name
+				<if test="ptype !='' and ptype !=null">
+					and bp.ptype = #{ptype,jdbcType=VARCHAR}
+				</if>
+				and pc.operators=#{operators,jdbcType=VARCHAR}
+				and now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE)
+				and pc.status='1'
+				and bp.logoImgUrl !=''
+				and pc.channelId=op.channelId
+			group by op.name,op.playTime
+		UNION select op.id, op.name, date_format(op.playTime,'%Y-%m-%d %H:%i') playTime, op.timeLongth,op.channelId,op.queue, 
+				op.playId,pc.channelName as channelName, bp.specialName,pc.playChannelId as localCid,op.basicName,bp.logoImgUrl,
+				op.dbPlay,pc.singleLiveServer,pc.singleLiveServer2,pc.groupLiveServer,pc.groupLiveServer2
+			from ott_programs op ,basicprogram bp,ott_operators_channel pc
+			where bp.name like CONCAT(op.basicName,'%')
+				<if test="ptype !='' and ptype !=null">
+					and bp.ptype = #{ptype,jdbcType=VARCHAR}
+				</if>
+				and pc.operators=#{operators,jdbcType=VARCHAR}
+				and now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE)
+				and pc.status='1'
+				and bp.logoImgUrl !=''
+				and pc.channelId=op.channelId
+				and specialName ='1' 
+			group by op.name,op.playTime order by playTime desc) a group by a.channelId
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by a.playTime desc
+		</if>
+	</select>
+</mapper>

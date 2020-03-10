@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.SearchLogMapper">
+	<resultMap id="SearchLogMap" type="SearchLog" > 
+		<id property="id" column="id"></id>
+		<result property="name" column="name"></result>
+		<result property="realNumber" column="typeId"></result>
+		<result property="virtualNumber" column="virtualNumber"></result>
+		<result property="updateTime" column="updateTime"></result>
+		<result property="status" column="status"></result>
+	</resultMap>  
+
+	<insert id="addSearchLog" parameterType="SearchLog">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[ insert into ott_search_log(name, realNumber, virtualNumber, updateTime) 
+			values(#{name,jdbcType=VARCHAR},
+				#{realNumber,jdbcType=INTEGER},
+				#{virtualNumber,jdbcType=INTEGER},
+				now())
+		]]>
+	</insert> 
+	
+	<select id="findSearchLogByPage" resultMap="SearchLogMap">
+		select id, name, realNumber, virtualNumber, date_format(updateTime,'%Y-%m-%d %H:%i:%s') updateTime, status
+		from ott_search_log 
+		<where>
+			<if test="status !='' and status !=null">
+				status=#{status, jdbcType=VARCHAR}
+			</if>
+			<if test="name !='' and name !=null">
+				and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by updateTime desc
+		</if>
+	</select>
+	<select id="getCountSearchLog" resultType="int">
+		select count(1)
+		from ott_search_log 
+		<where>
+			<if test="status !='' and status !=null">
+				status=#{status, jdbcType=VARCHAR}
+			</if>
+			<if test="name !='' and name !=null">
+				and name LIKE CONCAT(CONCAT('%', #{name}),'%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="findSearchLogByName" resultMap="SearchLogMap">
+		select id, name, realNumber, virtualNumber,date_format(updateTime,'%Y-%m-%d %H:%i:%s') updateTime,status
+		from ott_search_log
+		where name=#{name,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateRealNumber">
+		update ott_search_log set realNumber=realNumber+1, updateTime=now() where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateVirtualNumber">
+		update ott_search_log set virtualNumber=#{virtualNumber, jdbcType=INTEGER} where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateSearchLogStatus">
+		update ott_search_log set status=#{status, jdbcType=VARCHAR} where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<delete id="delSearchLog">
+		delete from ott_search_log where id=#{id, jdbcType=INTEGER}
+	</delete>
+	
+	<delete id="delLogList">
+		delete from ott_search_log where id in
+		 <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+	
+	<delete id="delSearchLogForTerminal">
+	    <![CDATA[
+            DELETE FROM ott_search_log WHERE DATE_FORMAT(updateTime, '%Y-%m-%d') < DATE_SUB(DATE_FORMAT(SYSDATE(),'%Y-%m-%d'), INTERVAL 15 DAY) AND realNumber < 10
+		]]>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,81 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>硬件型号信息<</title>
+#tagLibs()
+</head>
+<body>
+<div class="topline">
+	<a href="${ctx}/equip/findHardModel.do" class="wxbtn">硬件型号列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF" >#if($!{m.id}==""|| !${m.id})新增硬件型号#else 修改硬件型号#end</a>
+</div>
+<form id="form1" name="form1" action="" method="post">
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="margin-top:13px;">
+      <tr>
+      <td colspan="2">
+				<legend>硬件型号信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">所属品牌：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id" name="id" value="$!{m.id}"/>
+								<select name="brandId" id="brandId" style="margin:2px 2px;width:120px;">
+                					<option value="" >=请选择=</option>
+                					#foreach($p in $!brands)
+                                        <option value="$!p.id" #if($!{m.brandId}==${p.id}) selected #end>$!p.name</option>
+                					#end
+								</select>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">硬件类型：</td>
+							<td class="pn-fcontent">
+    							<select name="machType" id="machType" style="margin:2px 2px;width:120px">
+    								<option value="" >=请选择=</option>
+                					#foreach($mt in $dicts)
+										<option value="${mt.dicValue}" #if (${mt.dicValue} == $!{m.machType}) selected #end>${mt.dicName}</option>
+									#end
+    							</select>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">硬件型号：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="number" name="number" value="$!{m.number}" class="text-writer"/>
+								<input type="hidden" id="oldNumber" name="oldNumber" value="$!{m.number}" class="text-writer"/>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">操作系统：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="systemName" name="systemName" value="$!{m.systemName}" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">排序：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="sequence" name="sequence" value="$!{m.sequence}" class="text-writer"/>
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td width="17%">&nbsp;</td>
+    <td width="83%">
+		<button type="button" id="saveModel" class="bt-primary">保存</button>
+		<button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ott/equip/modelInfo.js"></script>
+</body>
+</html>

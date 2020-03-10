@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>运营商红外码信息</title>
+#tagLibs()
+</head>
+<body>
+<div class="topline">
+	<a href="${ctx}/equip/findOperatorsCode.do" class="wxbtn">运营商红外码列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF" >#if($!{infraredCode.id}==""|| !${infraredCode.id})新增运营商红外码#else 修改运营商红外码#end</a>
+</div>
+<form id="form1" name="form1" action="" method="post" >
+   <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="margin-top:13px;">
+      <tr>
+			<td>
+				<legend>红外码信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+    						<tr>
+    							<td width="15%" class="pn-flabel pn-flabel-h">区域：</td>
+    							<td class="pn-fcontent">
+    								<input type="hidden" id="id"  name="id" value="$!{infraredCode.id}"/> 
+									<select id="parentId" style="margin:2px 2px;width:120px" onchange="changeArea(this, 'areaId');">
+        								<option value="" >=请选择=</option>
+                    					#foreach($a in $areas)
+    										<option value="${a.id}" #if (${a.id} == $!{infraredCode.parentId}) selected #end>${a.name}</option>
+    									#end
+									</select>
+                                    <select id="areaId" name="areaId" style="margin:2px 2px;width:120px;" onchange="changeOperators(this,'operators');">
+										#if ($!{infraredCode.areaId} !='') 
+            								#foreach($a in $alist)
+            									<option value="${a.id}" #if (${a.id} == $!{infraredCode.areaId}) selected #end>${a.name}</option>
+            								#end
+            							#end
+            						</select>
+    								<em class="required">*</em>
+    							</td>
+    						</tr>
+    						<tr>
+    							<td width="15%" class="pn-flabel pn-flabel-h">红外方案：</td>
+    							<td class="pn-fcontent">
+        							<select name="operators" id="operators" style="margin:2px 2px;width:250px;" >
+                    					<option value="" >=请选择=</option>
+                    					#foreach($o in $olist)
+            								<option value="${o.id}" #if (${o.id} == $!{infraredCode.operators}) selected #end>${o.spName}->${o.name}</option>
+            							#end
+            						</select>
+    								<em class="required">*</em>
+    							</td>
+    					</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">设备类型：</td>
+							<td class="pn-fcontent">
+								<select name="type" id="type" style="margin:2px 2px;width:120px;">
+                					<option value="">=请选择=</option>
+                					#foreach($mt in $dicts)
+										<option value="${mt.dicValue}" #if (${mt.dicValue} == $!{infraredCode.type}) selected #end>${mt.dicName}</option>
+									#end
+								</select>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">所属品牌：</td>
+							<td class="pn-fcontent">
+                                <select name="brandId" id="brandId" style="margin:2px 2px;width:120px;">
+                					<option value="" >=请选择=</option>
+                					#foreach($p in $!brands)
+                                        <option value="$!p.id" #if ($!{p.id} == $!{infraredCode.brandId}) selected #end>$!p.name</option>
+                					#end
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">设备型号：</td>
+							<td class="pn-fcontent">
+								<select name="modelName" id="modelName" style="margin:2px 2px;width:120px;">
+                					<option value="" >=请选择=</option>
+                					#foreach($m in $!models)
+                                        <option value="$!m.number" #if (${m.number} == $!{infraredCode.modelName}) selected #end>$!m.number</option>
+                					#end
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">编码格式：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="codeFormat"  name="codeFormat" value="$!{infraredCode.codeFormat}" class="text-writer"/> 
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">客户码：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="clientCode"  name="clientCode" value="$!{infraredCode.clientCode}" class="text-writer"/> 
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">键值名：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="keyName"  name="keyName" value="$!{infraredCode.keyName}" class="text-writer"/> 
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">键值码：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="keyCode"  name="keyCode" value="$!{infraredCode.keyCode}" class="text-writer"/> 
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">排序：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="sequence"  name="sequence" value="$!{infraredCode.sequence}" class="text-writer"/> 
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">全码：</td>
+							<td class="pn-fcontent">
+								<textarea id="textarea" name="allCode" id="allCode" rows="5" cols="95">$!{infraredCode.allCode}</textarea>
+								<em class="required">*</em>
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td style="margin-top:15px;margin-left:150px; ">
+        <button type="button" id="saveCode" class="bt-primary" >确定</button>
+        <button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ott/equip/code2Info.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/equip/listCode2.js"></script>
+</body>
+</html>

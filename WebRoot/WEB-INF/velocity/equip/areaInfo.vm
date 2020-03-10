@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>区域信息</title>
+#tagLibs()
+</head>
+<body>
+<div class="topline">
+	<a href="${ctx}/equip/findArea.do" class="wxbtn">区域列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF" >#if($!{area.id}==""|| !${area.id})新增区域#else 修改区域#end</a>
+</div>
+<form id="form1" name="form1" action="" method="post" >
+   <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="margin-top:13px;">
+      <tr>
+			<td>
+				<legend>区域信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">区域名称：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id"  name="id" value="$!{area.id}"/> 
+								<input type="text" id="name"  name="name" value="$!{area.name}" class="text-writer"/> 
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">所属区域：</td>
+							<td class="pn-fcontent">
+								<select name="parentId" id="parentId" style="margin:2px 2px;width:120px">
+    								<option value="0" >=请选择=</option>
+                					#foreach($a in $areas)
+										<option value="${a.id}" #if (${a.id} == $!{area.parentId}) selected #end>${a.name}</option>
+									#end
+    							</select>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">省会城市：</td>
+							<td class="pn-fcontent">
+								<input type="radio" id="yes_capital" name="isCapital" value="1" #if($!{area.isCapital}=='1') checked="checked" #end/><label for="yes_capital">是</label>
+								<input type="radio" id="no_capital" name="isCapital" value="0" #if($!{area.isCapital}=='0'|| !${area.isCapital}) checked="checked" #end/><label for="no_capital">否</label>
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td style="margin-top:15px;margin-left:150px; ">
+        <button type="button" id="saveArea" class="bt-primary" >确定</button>
+        <button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ott/equip/areaInfo.js"></script>
+</body>
+</html>

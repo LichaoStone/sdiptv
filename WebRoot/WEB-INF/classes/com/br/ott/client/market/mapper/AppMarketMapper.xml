@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.market.mapper.AppMarketMapper">
+	<resultMap id="AppMarketMap" type="AppMarket">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="appName" property="appName" jdbcType="VARCHAR" />
+		<result column="marketName" property="marketName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="marketAttr" property="marketAttr" jdbcType="VARCHAR" />
+		<result column="site" property="site" jdbcType="VARCHAR" />
+		<result column="partnerName" property="partnerName" jdbcType="VARCHAR" />
+		<result column="partnerQQ" property="partnerQQ" jdbcType="VARCHAR" />
+		<result column="partnerTel" property="partnerTel" jdbcType="VARCHAR" />
+		<result column="partnerEmail" property="partnerEmail" jdbcType="VARCHAR" />
+		<result column="partnerRemark" property="partnerRemark" jdbcType="VARCHAR" />
+		<result column="entrance" property="entrance" jdbcType="VARCHAR" />
+		<result column="registerAccount" property="registerAccount" jdbcType="VARCHAR" />
+		<result column="accountType" property="accountType" jdbcType="VARCHAR" />
+		<result column="version" property="version" jdbcType="VARCHAR" />
+		<result column="updateDesc" property="updateDesc" jdbcType="VARCHAR" />
+		<result column="totalDownloads" property="totalDownloads" jdbcType="INTEGER" />
+		<result column="monthDownloads" property="monthDownloads" jdbcType="INTEGER" />
+		<result column="weekDownloads" property="weekDownloads" jdbcType="INTEGER" />
+		<result column="reviews" property="reviews" jdbcType="INTEGER" />
+		<result column="incr" property="incr" jdbcType="INTEGER" />
+	</resultMap>
+
+	<insert id="addAppMarket" parameterType="AppMarket">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_App_Market(appName,marketName,grade,marketAttr,site,partnerName,
+				partnerQQ,partnerTel,partnerEmail,partnerRemark,entrance,registerAccount,
+				accountType,version,updateDesc,totalDownloads,monthDownloads,weekDownloads,reviews,incr)
+				VALUES(
+				#{appName,jdbcType=VARCHAR},
+				#{marketName,jdbcType=VARCHAR},
+				#{grade,jdbcType=VARCHAR},
+				#{marketAttr,jdbcType=VARCHAR},
+				#{site,jdbcType=VARCHAR},
+				#{partnerName,jdbcType=VARCHAR},
+				#{partnerQQ,jdbcType=VARCHAR},
+				#{partnerTel,jdbcType=VARCHAR},
+				#{partnerEmail,jdbcType=VARCHAR},
+				#{partnerRemark,jdbcType=VARCHAR},
+				#{entrance,jdbcType=VARCHAR},
+				#{registerAccount,jdbcType=VARCHAR},
+				#{accountType,jdbcType=VARCHAR},
+				#{version,jdbcType=VARCHAR},
+				#{updateDesc,jdbcType=VARCHAR},
+				#{totalDownloads,jdbcType=INTEGER},
+				#{monthDownloads,jdbcType=INTEGER},
+				#{weekDownloads,jdbcType=INTEGER},
+				#{reviews,jdbcType=INTEGER},
+				#{incr,jdbcType=INTEGER}
+				) 
+	</insert>
+
+
+
+	<resultMap id="listAppMarketMap" type="AppMarket">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="appName" property="appName" jdbcType="VARCHAR" />
+		<result column="marketName" property="marketName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="marketAttr" property="marketAttr" jdbcType="VARCHAR" />
+		<result column="version" property="version" jdbcType="VARCHAR" />
+		<result column="totalDownloads" property="totalDownloads" jdbcType="INTEGER" />
+		<result column="monthDownloads" property="monthDownloads" jdbcType="INTEGER" />
+		<result column="weekDownloads" property="weekDownloads" jdbcType="INTEGER" />
+		<result column="reviews" property="reviews" jdbcType="INTEGER" />
+		<association property="appLoads" column="id"  select="com.br.ott.client.market.mapper.AppLoadsMapper.getAppLoadsByMarketId"/>
+	</resultMap>
+	<select id="findAppMarketByPage" resultMap="listAppMarketMap">
+		select id,appName,marketName,grade,marketAttr,version,totalDownloads,monthDownloads,weekDownloads,reviews
+		from OTT_App_Market
+		<where>
+			<if test="appName != null and appName != ''">
+				appName= #{appName,jdbcType=VARCHAR}
+			</if>
+			<if test="marketName != null and marketName != ''">
+				and marketName= #{marketName,jdbcType=VARCHAR}
+			</if>
+			<if test="grade != null and grade != ''">
+				and grade= #{grade,jdbcType=VARCHAR}
+			</if>
+			<if test="partnerName !=null and partnerName !=''">
+				and partnerName= #{partnerName,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+	<select id="getCountAppMarket" resultType="int">
+		select count(1)
+		from OTT_App_Market 
+		<where>
+			<if test="appName != null and appName != ''">
+				appName= #{appName,jdbcType=VARCHAR}
+			</if>
+			<if test="marketName != null and marketName != ''">
+				and marketName= #{marketName,jdbcType=VARCHAR}
+			</if>
+			<if test="grade != null and grade != ''">
+				and grade= #{grade,jdbcType=VARCHAR}
+			</if>
+			<if test="partnerName !=null and partnerName !=''">
+				and partnerName= #{partnerName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAppMarketById" resultMap="AppMarketMap">
+		<![CDATA[ 
+			select * from OTT_App_Market where id=#{id}
+		]]>
+	</select>
+
+	<update id="updateAppMarket" parameterType="AppMarket">
+		<![CDATA[ UPDATE OTT_App_Market SET 
+				appName=#{appName,jdbcType=VARCHAR},
+				marketName=#{marketName,jdbcType=VARCHAR},
+				grade=#{grade,jdbcType=VARCHAR},
+				marketAttr=#{marketAttr,jdbcType=VARCHAR},
+				site=#{site,jdbcType=VARCHAR},
+				partnerName=#{partnerName,jdbcType=VARCHAR},
+				partnerQQ=#{partnerQQ,jdbcType=VARCHAR},
+				partnerTel=#{partnerTel,jdbcType=VARCHAR},
+				partnerEmail=#{partnerEmail,jdbcType=VARCHAR},
+				partnerRemark=#{partnerRemark,jdbcType=VARCHAR},
+				entrance=#{entrance,jdbcType=VARCHAR},
+				registerAccount=#{registerAccount,jdbcType=VARCHAR},
+				accountType=#{accountType,jdbcType=VARCHAR},
+				version=#{version,jdbcType=VARCHAR},
+				updateDesc=#{updateDesc,jdbcType=VARCHAR},
+				reviews=#{reviews,jdbcType=INTEGER}
+			where id=#{id}
+		]]>
+	</update>
+	
+	<update id="updateAppMarketLoads" parameterType="AppMarket">
+		<![CDATA[ UPDATE OTT_App_Market SET 
+				totalDownloads=#{totalDownloads,jdbcType=INTEGER},
+				monthDownloads=#{monthDownloads,jdbcType=INTEGER},
+				weekDownloads=#{weekDownloads,jdbcType=INTEGER}
+			where id=#{id}
+		]]>
+	</update>
+	<delete id="delAppMarketById">
+		delete from OTT_App_Market where id=#{id}
+	</delete>
+	
+	<select id="findAppMarketByCond" resultMap="AppMarketMap">
+		select * from OTT_App_Market
+		<where>
+			<if test="appName != null and appName != ''">
+				appName= #{appName,jdbcType=VARCHAR}
+			</if>
+			<if test="marketName != null and marketName != ''">
+				and marketName= #{marketName,jdbcType=VARCHAR}
+			</if>
+			<if test="grade != null and grade != ''">
+				and grade= #{grade,jdbcType=VARCHAR}
+			</if>
+			<if test="partnerName !=null and partnerName !=''">
+				and partnerName= #{partnerName,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id
+		</if>
+	</select>
+	
+</mapper>

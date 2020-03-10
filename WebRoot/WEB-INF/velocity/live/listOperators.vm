@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>运营商管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+	<!--  快速转换位置按钮  -->
+	<div class="topline">
+    	<a href="#" class="xzbtn" style="color:#FFFFFF">运营商列表</a> | 
+        <a href="${ctx}/live/toCityOperators.do" class="wxbtn">新增运营商</a>
+	</div>
+	<form name="queryForm" id="queryForm" >
+	<!--  搜索表单  -->
+		<table border='0' cellpadding='0' cellspacing='0' style="margin-top:8px;">
+			<tr class="search">
+				<td>运营商名称：<input type='text' name='name' value="$!{operators.name}"/>
+				</td>
+				<td>运营商编码：<input type='text' name='code' value="$!{operators.code}"/>
+				<input type='hidden' id='orderColumn' name="orderColumn" value='$!{operators.orderColumn}'/>
+				</td>
+				<td><input id="queryOperators" type="image" src="${ctx}/images/button_search.gif"/></td>
+			</tr>
+		</table>
+		<!--  内容列表   -->
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="6" style="padding-left:8px;">
+					◆ 频道运营商 &gt; 频道运营商列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+			<td width="5%"><input type="checkbox" id="allSelect" style="padding-top:5px;"  onclick="isCheckAll('arcID',this);"><label for="allSelect">全选</label></td>
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="name" lastOrderBy="$!{operators.orderColumn}" class="tb_head">运营商名称</a></td>
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="code" lastOrderBy="$!{operators.orderColumn}" class="tb_head">运营商编码</a></td>
+				<td width="7%"><a href="javascript:void(0);" onclick="orderBy(this);" name="sequence" lastOrderBy="$!{operators.orderColumn}" class="tb_head">排序</a></td>
+				<td width="7%"><a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{operators.orderColumn}" class="tb_head">状态</a></td>
+				<td width="15%">操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    			 <td colspan="6"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+			#foreach ($o in $list)
+				<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    				<td><input type="checkbox" id="arcID" name="arcID" class="np" value="$!{o.id}"/></td>
+    				<td>$!{o.name}</td>
+					<td>$!{o.code}</td>
+					<td>$!{o.sequence}</td>
+    				<td>
+						#if('1'==$!{o.status})
+                			已启用
+                		#elseif('0'==$!{o.status})
+                			已停用
+                		#elseif('2'==$!{o.status})
+                			待完善
+                		#end
+					</td>
+    				<td>
+						<a href="${ctx}/live/toCityOperators.do?id=$!{o.id}">修改</a> |
+						<a href="javascript:toChannel(this, '$!{o.id}', '$!{o.areaId}');">频道</a> |
+						#if($!{o.status}=='0')
+							<a href="javascript:updateOperatorsStatus(this, '$!{o.id}', '$!{o.status}');">启用</a> |
+                		#elseif($!{o.status}=='1')
+							<a href="javascript:updateOperatorsStatus(this, '$!{o.id}', '$!{o.status}');">停用</a> |
+                		#elseif($!{o.status}=='2')
+							<a href="javascript:updateOperatorsStatus(this, '$!{o.id}', '$!{o.status}');">完善</a> |
+						#end
+						<a href="javascript:delOperators(this, '$!{o.id}');">删除</a> 
+    				</td>
+    			</tr>
+             #end
+    	</table>
+    	<div height="36" align="left">
+    		<a href="javascript:void(0);" class="wxbtn" id="delOperators">批量删除</a>
+    	</div>
+    	<div height="36" align="right">
+            #pagination(${operators})
+        </div>
+</form>
+</body>
+	<script type="text/javascript" src="${ctx}/js/ott/live/listOperators.js"></script>
+</html>

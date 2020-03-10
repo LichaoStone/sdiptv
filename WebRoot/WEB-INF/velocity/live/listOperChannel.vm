@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>运营商频道管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+	<!--  快速转换位置按钮  -->
+	<div class="topline">
+    	<a href="#" class="xzbtn" style="color:#FFFFFF">运营商频道列表</a> | 
+        <a href="${ctx}/oc/toOperatorsChannel.do" class="wxbtn">新增运营商频道</a>
+	</div>
+	<form name="queryForm" id="queryForm" >
+		<table border='0' cellpadding='0' cellspacing='0' style="margin-top:8px;">
+			<tr class="search">
+				<td>运营商：<select name="operators" id="operators" style="margin:2px 2px;width:120px;" >
+        					<option value="" >=请选择=</option>
+        					#foreach($o in $olist)
+								<option value="${o.id}" #if (${o.id} == $!{channel.operators}) selected #end>${o.name}</option>
+							#end
+						</select>
+                </td>
+				<td>频道：
+					<select name="channelId" id="channelId" style="margin:2px 2px;width:120px;">
+    					<option value="">=请选择=</option>
+    					#foreach($c in $channels)
+							<option value="${c.id}" #if (${c.id} == $!{channel.channelId}) selected #end>${c.name}</option>
+						#end
+					</select>
+				</td>
+				<td>频道名称：
+					<input type='text' id="channelName" name='channelName' value='$!{channel.channelName}'/>
+				</td>
+				<td><input id="queryOperChannel" type="image" src="${ctx}/images/button_search.gif"/></td>
+				    <input type='hidden' id='orderColumn' name="orderColumn" value='$!{channel.orderColumn}'/>
+			</tr>
+			
+		</table>
+		<em id="top-message" class="top-message" style="display:none;margin-top:20px;"></em>
+			<div id="uploadImg" style="display:none; height:30px; width:30px; margin:5px auto;">
+				<img src="${ctx}/images/loadinglit.gif" style="width:30px; height:30px;"/>
+			</div>
+		<!--  内容列表   -->
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="7" style="padding-left:8px;">◆ 运营商频道 &gt; 运营商频道列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+				<td><input type="checkbox" id="allSelect" style="padding-top:5px;"  onclick="isCheckAll('arcID',this);"><label for="allSelect">全选</label></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="operatorsName" lastOrderBy="$!{channel.orderColumn}" class="tb_head">运营商</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="channelId" lastOrderBy="$!{channel.orderColumn}" class="tb_head">频道</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="playChannelId" lastOrderBy="$!{channel.orderColumn}" class="tb_head">频道号</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="isLocal" lastOrderBy="$!{channel.orderColumn}" class="tb_head">本地频道</a></td>
+				<td><a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{channel.orderColumn}" class="tb_head">状态</a></td>
+				<td>操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+        			 <td colspan="7"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+		   #foreach ($b in $!list)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+					<td><input type="checkbox" id="arcID" name="arcID" class="np" value="$!{b.id}"/></td>
+    				<td>$!{b.operatorsName}</td> 
+					<td>$!{b.channelName}</td> 
+					<td>$!{b.playChannelId}</td>
+					<td>#if($!{b.isLocal} == '1') 是  #else 否 #end</td>
+    				<td>#if($!{b.status} == '1') 启用  #else 停用 #end</td>
+    				<td>
+						<a href="${ctx}/oc/toOperatorsChannel.do?id=$!{b.id}">编辑</a>
+						#if($!{b.status}=='0')
+							<a href="javascript:updateOperChannelStatus(this, '$!{b.id}', '$!{b.status}');">启用</a> |
+                		#else
+							<a href="javascript:updateOperChannelStatus(this, '$!{b.id}', '$!{b.status}');">停用</a> |
+						#end
+						<a href="javascript:delOperChannel(this, '$!{b.id}');">删除</a>
+					</td>
+    			</tr>
+		   #end
+		</table>
+		<div height="36" align="left">
+    		<a href="javascript:void(0);" class="wxbtn" id="delOperChannel">批量删除</a>
+    	</div>
+		<div height="36" align="right">
+    		#pagination(${channel})
+    	</div>
+</form>
+<table width="100%" border="0" cellpadding="2" cellspacing="1" bgcolor="#CFCFCF" align="center" style="margin-top:8px">
+    <tr bgcolor="#ffffff">
+    	<td> 
+             &nbsp;批量导入： 
+    		 <input id="fileOperChannel" type="file" name="fileOperChannel" class="text-writer9" onChange="checkFile(this,this.value)"/>
+			 <button type="button" id="inputExcel" class="bt-primary" style="margin-left:3px;">导入</button>
+			<a href="${ctx}/file/operatorsChannel.xls" target="_balnk" class="wxbtn">下载模板</a>
+        </td>
+    </tr>
+</table>
+<script type="text/javascript" src="${ctx}/js/jquery/ajaxfileupload.js"></script>
+<script type="text/javascript" src="${ctx}/js/ott/live/listOperChannel.js"></script>
+</body>
+</html>

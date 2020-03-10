@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>客服管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+	<!--  快速转换位置按钮  -->
+	<div class="topline">
+    	<a href="#" class="xzbtn" style="color:#FFFFFF">客服列表</a> | 
+        <a href="${ctx}/market/toCustomer.do" class="wxbtn">新增客服</a>
+	</div>
+	<form name="queryForm" id="queryForm" >
+	<!--  搜索表单  -->
+		<table border='0' cellpadding='0' cellspacing='0' style="margin-top:8px;">
+			<tr class="search">
+				<td>客服名称：<input type='text' name='customerName' value="$!{customer.customerName}"/></td>
+				<td>客服账号：<input type='text' name='customerNo' value="$!{customer.customerNo}"/></td>
+				<td>所属客服：
+					<select id="type" name="type" style="margin:2px 2px;width:120px">
+						<option value="" >=请选择=</option>
+						<option value="1" #if ("1"== $!{customer.type}) selected #end>QQ</option>
+						<option value="2" #if ("2"== $!{customer.type}) selected #end>微信</option>
+						<option value="3" #if ("3"== $!{customer.type}) selected #end>微博</option>
+					</select>
+				</td>
+				<input type='hidden' id='orderColumn' name="orderColumn" value='$!{customer.orderColumn}'/>
+				<td><input id="queryCustomer" type="image" src="${ctx}/images/button_search.gif"/></td>
+			</tr>
+		</table>
+		<!--  内容列表   -->
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="5" style="padding-left:8px;">
+					◆ 客服 &gt; 客服列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="customerName" lastOrderBy="$!{customer.orderColumn}" class="tb_head">客服名称</a></td>
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="customerNo" lastOrderBy="$!{customer.orderColumn}" class="tb_head">客服账号</a></td>
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="type" lastOrderBy="$!{customer.orderColumn}" class="tb_head">账号类型</a></td>
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{customer.orderColumn}" class="tb_head">状态</a></td>
+				<td width="15%">操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    			 <td colspan="5"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+			#foreach ($c in $list)
+				<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    				<td>$!{c.customerName}</td>
+    				<td>$!{c.customerNo}</td> 
+					<td>#if($!{c.type} == '1') QQ  
+						#elseif ($!{c.type} == '2') 微信 
+						#elseif ($!{c.type} == '2') 微博
+						#end
+					</td>
+    				<td>#if($!{c.status} == '1') 启用  #elseif ($!{c.status} == '0')停用 #end</td>
+    				<td>
+						<a href="${ctx}/market/toCustomer.do?id=$!{c.id}">修改</a> |
+						<a  href="javascript:delCustomer(this, '$!{c.id}');">删除</a> |
+						#if($!{type.status}=='0')
+							<a href="javascript:updateCustomerStatus(this, '$!{c.id}', '$!{c.status}');">启用</a> 
+                		#else
+							<a href="javascript:updateCustomerStatus(this, '$!{c.id}', '$!{c.status}');">停用</a>
+                		#end
+    				</td>
+    			</tr>
+             #end
+    	</table>
+    	<div height="36" align="right">
+            #pagination(${customer})
+        </div>
+</form>
+	<script type="text/javascript" src="${ctx}/js/ott/market/listCustomer.js"></script>
+	</body>
+</html>

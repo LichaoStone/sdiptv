@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>应用市场信息</title>
+#tagLibs()
+</head>
+<body>
+<div class="topline">
+	<a href="${ctx}/market/findAppMarket.do" class="wxbtn">应用市场列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF" >#if($!{appMarket.id}==""|| !${appMarket.id})新增应用市场#else 修改应用市场#end</a>
+</div>
+<form id="form1" name="form1" action="" method="post" >
+   <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="margin-top:13px;">
+      <tr>
+			<td>
+				<legend>应用市场信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">应用名称：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="isUp"  name="isUp" value="$!{isUp}"/> 
+								<input type="hidden" id="id"  name="id" value="$!{appMarket.id}"/> 
+								#if($!{isUp}=='true')
+									$!{appMarket.appName}
+									<input type="hidden" id="appName"  name="appName" value="$!{appMarket.appName}"/> 
+								#else
+									<input type="text" id="appName"  name="appName" value="$!{appMarket.appName}" class="text-writer"/> 
+								#end
+								<em class="required">*</em>
+							</td>
+							<td width="15%" class="pn-flabel pn-flabel-h">应用市场名称：</td>
+							<td class="pn-fcontent">
+								#if($!{isUp}=='true')
+									$!{appMarket.marketName}
+									<input type="hidden" id="marketName"  name="marketName" value="$!{appMarket.marketName}"/> 
+								#else
+									<input type="text" id="marketName"  name="marketName" value="$!{appMarket.marketName}" class="text-writer"/> 
+								#end
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">平台等级：</td>
+							<td class="pn-fcontent">
+								#if($!{isUp}=='true')
+									$!{appMarket.grade}
+									<input type="hidden" id="grade"  name="grade" value="$!{appMarket.grade}"/> 
+								#else
+									<select id="grade" name="grade" style="margin:2px 2px;width:120px">
+										<option value="" >=请选择=</option>
+										<option value="a" #if ("a"== $!{appMarket.grade}) selected #end>a</option>
+										<option value="b" #if ("b"== $!{appMarket.grade}) selected #end>b</option>
+										<option value="c" #if ("c"== $!{appMarket.grade}) selected #end>c</option>
+									</select>
+								#end
+								<em class="required">*</em>
+							</td>
+							<td width="15%" class="pn-flabel pn-flabel-h">平台属性：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="marketAttr"  name="marketAttr" value="$!{appMarket.marketAttr}" class="text-writer"/> 
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">网址：</td>
+							<td class="pn-fcontent">
+								#if($!{isUp}=='true')
+									$!{appMarket.site}
+									<input type="hidden" id="site"  name="site" value="$!{appMarket.site}"/> 
+								#else
+									<input type="text" id="site"  name="site" value="$!{appMarket.site}" class="text-writer"/> 
+								#end
+								<em class="required">*</em>
+							</td>
+							<td width="15%" class="pn-flabel pn-flabel-h">发布应用入口：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="entrance"  name="entrance" value="$!{appMarket.entrance}" class="text-writer"/> 
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">姓名：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="partnerName"  name="partnerName" value="$!{appMarket.partnerName}" class="text-writer"/> 
+							</td>
+							<td width="15%" class="pn-flabel pn-flabel-h">QQ：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="partnerQQ"  name="partnerQQ" value="$!{appMarket.partnerQQ}" class="text-writer"/> 
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">电话：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="partnerTel"  name="partnerTel" value="$!{appMarket.partnerTel}" class="text-writer"/> 
+							</td>
+							<td width="15%" class="pn-flabel pn-flabel-h">邮箱：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="partnerEmail"  name="partnerEmail" value="$!{appMarket.partnerEmail}" class="text-writer"/> 
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">备注：</td>
+							<td class="pn-fcontent" colspan="3">
+								<input type="text" id="partnerRemark"  name="partnerRemark" value="$!{appMarket.partnerRemark}" class="text-writer"/> 
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">注册邮箱或手机(账号)：</td>
+							<td class="pn-fcontent">
+								#if($!{isUp}=='true')
+									$!{appMarket.registerAccount}
+									<input type="hidden" id="registerAccount"  name="registerAccount" value="$!{appMarket.registerAccount}"/> 
+								#else
+									<input type="text" id="registerAccount"  name="registerAccount" value="$!{appMarket.registerAccount}" class="text-writer"/> 
+								#end
+							</td>
+							<td width="15%" class="pn-flabel pn-flabel-h">帐号属性：</td>
+							<td class="pn-fcontent">
+								#if($!{isUp}=='true')
+									$!{appMarket.accountType}
+									<input type="hidden" id="accountType"  name="accountType" value="$!{appMarket.accountType}"/> 
+								#else
+									<input type="radio" id="wx_type1" name="accountType" value="公司" #if($!{appMarket.accountType}=='公司'|| !${appMarket.accountType}) checked="checked" #end/><label for="wx_type1">公司</label>
+									<input type="radio" id="wb_type1" name="accountType" value="个人" #if($!{appMarket.accountType}=='个人') checked="checked" #end/><label for="wb_type1">个人</label>
+								#end
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">发布版本号：</td>
+							<td class="pn-fcontent">
+							#if($!{isUp}=='true')
+								<input type="text" id="version"  name="version" class="text-writer"/> 
+							#else
+								<input type="text" id="version"  name="version" value="$!{appMarket.version}" class="text-writer"/> 
+							#end
+								<em class="required">*</em>
+							</td>
+							<td width="15%" class="pn-flabel pn-flabel-h">评论数：</td>
+							<td class="pn-fcontent">
+							#if($!{isUp}=='true')
+								<input type="text" id="reviews"  name="reviews" class="text-writer"/>
+							#else
+								<input type="text" id="reviews"  name="reviews" value="$!{appMarket.reviews}" class="text-writer"/> 
+							#end
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td style="margin-top:15px;margin-left:150px; ">
+        <button type="button" id="saveAppMarket" class="bt-primary" >确定</button>
+        <button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ott/market/appMarketInfo.js"></script>
+</body>
+</html>

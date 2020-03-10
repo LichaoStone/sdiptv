@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>品牌信息</title>
+#tagLibs()
+</head>
+<body>
+<div class="topline">
+	<a href="${ctx}/equip/findBrand.do" class="wxbtn">品牌列表</a> | 
+    <a href="#" class="xzbtn" style="color:#FFFFFF" >#if($!{brand.id}==""|| !${brand.id})新增品牌#else 修改品牌#end</a>
+</div>
+<form id="brandForm" name="brandForm" action="" method="post" >
+   <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="margin-top:13px;">
+      <tr>
+			<td>
+				<legend>品牌信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">品牌名称：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id"  name="id" value="$!{brand.id}"/> 
+                                <input type="hidden" id="oldName" value="$!{brand.name}"/> 
+								<input type="text" id="name"  name="name" value="$!{brand.name}" class="text-writer"/> 
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">厂商全称：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="factory"  name="factory" value="$!{brand.factory}" class="text-writer"/>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="15%" class="pn-flabel pn-flabel-h">编码：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="code"  name="code" value="$!{brand.code}" class="text-writer"/>
+								<em class="required">*</em>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">类型推荐：</td>
+							<td class="pn-fcontent" >
+								#foreach($type in $!dicts)
+									<input type="checkbox" id="$!{type.id}_$velocityCount" name="nodes" value="$!type.dicValue"
+										#if($!type.check=='true') checked="checked" #end/>
+									<label for="$!{type.id}_$velocityCount">$!type.dicName</label>
+									#if($velocityCount%7==0) </br>#end
+								#end
+								<input type="hidden" id="recType"  name="recType" />
+								<input type="hidden" id="oldType"  name="oldType" value="$!{brand.recTypeStr}"/>
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td style="margin-top:15px;margin-left:150px; ">
+        <button type="button" id="saveBrand" class="bt-primary" >确定</button>
+        <button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ott/equip/brandInfo.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>用户组管理</title>
+    <meta name="content-type" content="text/html; charset=UTF-8">
+<title></title>
+#tagLibs()
+<script>
+$(function() {
+	$('#queryUserGroup').click(function(e) {
+		initPage();
+		$('#queryForm').submit();
+	});
+});
+
+function updateGroupStatus($this, id, status) {
+	var url = '';
+	if (status == '0') {
+		url = window.ctx + '/group/reverseUserGroup.do?id=' + id;
+		if (!window.confirm("您确定要启用此用户组！")) {
+			return false;
+		}
+	} else if (status == '1') {
+		url = window.ctx + '/group/closeUserGroup.do?id=' + id;
+		if (!window.confirm("您确定要停用此用户组！")) {
+			return false;
+		}
+	}else {
+		return;
+	}
+	$.post(url, function(feedback) {
+		alert(feedback.message);
+		if (feedback.successful) {
+			location.reload();
+		}
+	})
+}
+
+function syncGroupTo3A($this, id){
+	if (!window.confirm("您确定要同步此用户组到3A平台！")) {
+		return false;
+	}
+	var url = window.ctx + '/group/syncGroupTo3A.do?id=' + id;
+	$.post(url, function(feedback) {
+		alert(feedback.message);
+		if (feedback.successful) {
+			location.reload();
+		}
+	})
+}
+function syncGroupToLaunch($this, id){
+	if (!window.confirm("您确定要同步此用户组到LAUNCH平台！")) {
+		return false;
+	}
+	var url = window.ctx + '/group/syncGroupToLaunch.do?id=' + id;
+	$.post(url, function(feedback) {
+		alert(feedback.message);
+		if (feedback.successful) {
+			location.reload();
+		}
+	})
+}
+</script>
+</head>
+<body>
+<div class="topline" style="margin:8px">
+	<a href="#" class="xzbtn" style="color:#FFFFFF">用户组列表</a> | 
+    <a href="${ctx}/group/toUserGroup.do" class="wxbtn">新增用户组</a>
+</div>
+<!--  内容列表   -->
+<form id="queryForm" method="get">
+ <table border='0' cellpadding='0' cellspacing='0' height="36">
+    <tr class="search">
+        <td>所属运营商：<select name="operators" id="operators" style="width:120px;">
+      					<option value="" >=请选择=</option>
+      					#foreach($o in $olist)
+						<option value="${o.code}" #if (${o.code} == $!{usergroup.operators}) selected #end>${o.name}</option>
+					#end
+				</select>
+		</td>
+		<td>
+			<input type="hidden" id="orderColumn" name="orderColumn" value="$!{usergroup.orderColumn}" />
+            <img id="queryUserGroup" type="image" src="$!{ctx}/images/button_search.gif"/>
+        </td>
+	</tr>
+</table>
+<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+            <tr bgcolor="#CFCFCF">
+            	<td height="28" colspan="5" style="padding-left:10px;">
+	◆ 用户组信息管理 &gt; 用户组信息列表
+	</td>
+</tr>
+<tr align="left" bgcolor="#eff2f7" height="30">
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="operators" lastOrderBy="$!{usergroup.orderColumn}" class="tb_head">所属运营商</a></td>
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="groupName" lastOrderBy="$!{usergroup.orderColumn}" class="tb_head">用户组名称</a></td>
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="groupCode" lastOrderBy="$!{usergroup.orderColumn}" class="tb_head">用户组编码</a></td>
+		<td><a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{usergroup.orderColumn}" class="tb_head">状态</a></td>
+		<td>操作</td>
+</tr>
+#if ($null.isNull($!usergroups) || $!usergroups.size()==0)
+	<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	 <td colspan="5"><h1>暂无相关数据内容</h1></td>
+    </tr>
+#end
+#foreach ($!c in $!usergroups)
+<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	<td >$!{c.operatorsName}</td>
+	<td >$!{c.groupName}</td>
+	<td >$!{c.groupCode}</td>
+	<td >
+		#if($!{c.status}=='1')
+			启用
+		#else
+			停用
+		#end
+	</td>
+	<td>
+		<a href="${ctx}/group/toUserGroup.do?id=$!{c.id}">编辑</a> |
+		#if($!{c.status}=='0')
+			<a href="javascript:updateGroupStatus(this, '$!{c.id}', '$!{c.status}');">启用</a>
+		#elseif($!{c.status}=='1')
+			<a href="javascript:updateGroupStatus(this, '$!{c.id}', '$!{c.status}');">停用</a> |
+		#end
+		<a href="${ctx}/groupChannel/findGroupChannel.do?operators=$!{c.operators}&groupCode=$!{c.groupCode}">组频道</a> |
+		#if($!{c.aaaStatus}=='0')
+			<a href="javascript:syncGroupTo3A(this, '$!{c.id}');">3A同步</a>
+		#end
+		#if($!{c.lcStatus}=='0'&& $!{c.operators}!='hngd.yd')
+			 | <a href="javascript:syncGroupToLaunch(this, '$!{c.id}');">LAUNCH同步</a>
+		#end
+	</td>
+</tr>
+#end
+</table>
+<div height="36" align="right">
+    #pagination($!{usergroup})
+</div>
+</form>
+</body>
+</html>

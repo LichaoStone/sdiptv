@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>频道类型管理</title>
+#tagLibs()
+</head>
+<body leftmargin="8" topmargin="8" background='${ctx}/images/allbg.gif'>
+<!--  快速转换位置按钮  --> 
+<!--  内容列表   -->
+<form id="queryForm" method="get">
+<div class="topline">
+	<a href="#" class="xzbtn" style="color:#FFFFFF">频道类型列表</a> | 
+    <a href="${ctx}/type/toChannelType.do" class="wxbtn">新增频道类型</a>
+</div>
+<input type="hidden" id="orderColumn" name="orderColumn" value="$!{type.orderColumn}" />
+<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+<tr align="left" bgcolor="#eff2f7" height="30">
+	<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="id" lastOrderBy="$!{type.orderColumn}" class="tb_head">编号</a></td>
+	<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="operators" lastOrderBy="$!{type.orderColumn}" class="tb_head">运营商</a></td>
+    <td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="name" lastOrderBy="$!{type.orderColumn}" class="tb_head">名称</a></td>
+    <td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="code" lastOrderBy="$!{type.orderColumn}" class="tb_head">编码</a></td>
+    <td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="sequence" lastOrderBy="$!{type.orderColumn}" class="tb_head">排序</a></td>
+	<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="isSpecial" lastOrderBy="$!{type.orderColumn}" class="tb_head">特殊类型</a></td>
+	<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="parentId" lastOrderBy="$!{type.orderColumn}" class="tb_head">终端展现</a></td>
+	<td width="10%"><a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{type.orderColumn}" class="tb_head">状态</a></td>
+	<td width="10%">操作</td>
+</tr>
+#if ($null.isNull($list) || $list.size()==0)
+	<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	 <td colspan="8"><h1>暂无相关数据内容</h1></td>
+    </tr>
+#end
+#foreach ($c in $list)
+<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	 <td >$!{c.id}</td>
+	 <td >$!{c.operatorsName}</td>
+     <td >$!{c.name}</td>
+     <td >$!{c.code}</td>
+	 <td >$!{c.sequence}</td>
+	 <td >
+		#if('1'==$!{c.isSpecial})
+			是
+		#elseif('2'==$!{c.isSpecial})
+			否
+		#end
+	 </td>
+	 <td >
+		#if('1'==$!{c.parentId})
+			是
+		#elseif('0'==$!{c.parentId})
+			否
+		#end
+	 </td>
+     <td >
+		#if('1'==$!{c.status})
+			已启动
+		#else
+			已停用
+		#end
+	</td>
+	<td >
+        <a href="${ctx}/type/toChannelType.do?id=$!{c.id}">编辑</a> |
+		#if('2'==$!{c.isSpecial})
+	        <a href="${ctx}/type/toCTypeList.do?typeId=$!{c.id}&typeName=$!{c.name}">维护频道</a> |
+		#end
+		#if($!{c.status}=='0')
+			<a href="javascript:updateTypeStatus(this, '$!{c.id}', '$!{c.status}');">启用</a>
+		#else
+			<a href="javascript:updateTypeStatus(this, '$!{c.id}', '$!{c.status}');">停用</a>
+		#end
+     </td>
+</tr>
+#end
+</table>
+<div height="36" align="right">
+    #pagination(${type})
+</div>
+</form>
+<script type="text/javascript" src="${ctx}/js/ott/live/listType.js"></script>
+</body>
+</html>

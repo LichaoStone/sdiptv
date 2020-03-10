@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.OperatorsChannelMapper">
+	<resultMap id="OperatorsChannelMap" type="OperatorsChannel" > 
+		<id property="id" column="id"></id>
+		<result property="operators" column="operators"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="playChannelId" column="playChannelId"></result>
+		<result property="operatorsName" column="operatorsName"></result>
+		<result property="sequence" column="sequence"></result>
+		<result property="status" column="status"></result>
+		<result property="createTime" column="createTime"></result>
+		<result property="isLocal" column="isLocal"></result>
+	</resultMap>  
+
+	<insert id="addOperatorsChannel" parameterType="OperatorsChannel">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[ insert into ott_operators_channel(areaId,operators, operatorsName,channelId,channelName,playChannelId, 
+			sequence,isLocal,singleLiveServer,singleLiveServer2,groupLiveServer,groupLiveServer2,createTime,status) 
+		values(#{areaId,jdbcType=VARCHAR},
+			#{operators,jdbcType=VARCHAR},
+			#{operatorsName,jdbcType=VARCHAR},
+			#{channelId,jdbcType=VARCHAR},
+			#{channelName,jdbcType=VARCHAR},
+			#{playChannelId,jdbcType=VARCHAR},
+			#{sequence,jdbcType=INTEGER},
+			#{isLocal,jdbcType=VARCHAR},
+			#{singleLiveServer,jdbcType=VARCHAR},
+			#{singleLiveServer2,jdbcType=VARCHAR},
+			#{groupLiveServer,jdbcType=VARCHAR},
+			#{groupLiveServer2,jdbcType=VARCHAR},
+			now(),
+			'1')
+		]]>
+	</insert> 
+	
+	<update id="updateOperatorsChannel">
+		update ott_operators_channel set 
+			areaId=#{areaId,jdbcType=VARCHAR},
+			operators=#{operators,jdbcType=VARCHAR},
+			operatorsName=#{operatorsName,jdbcType=VARCHAR},
+			channelId=#{channelId,jdbcType=VARCHAR},
+			channelName=#{channelName,jdbcType=VARCHAR},
+			playChannelId=#{playChannelId,jdbcType=VARCHAR},
+			sequence=#{sequence,jdbcType=INTEGER},
+			isLocal=#{isLocal,jdbcType=VARCHAR},
+			singleLiveServer=#{singleLiveServer,jdbcType=VARCHAR},
+			singleLiveServer2=#{singleLiveServer2,jdbcType=VARCHAR},
+			groupLiveServer=#{groupLiveServer,jdbcType=VARCHAR},
+			groupLiveServer2=#{groupLiveServer2,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<select id="findOperatorsChannelByPage" resultMap="OperatorsChannelMap">
+		select oc.id, oc.areaId,oc.operators, oc.channelId, oc.channelName,oc.sequence,
+			oc.createTime,oc.status,oc.playChannelId,oc.isLocal,oc.operatorsName
+		from ott_operators_channel oc
+		<where>
+			<if test="status !='' and status !=null">
+				oc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and oc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="channelId !='' and channelId !=null">
+				and oc.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="channelName !='' and channelName !=null">
+				and oc.channelName LIKE CONCAT(CONCAT('%', #{channelName}),'%')
+			</if>
+			<if test="areaId !='' and areaId !=null">
+				and oc.areaId = #{areaId,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by oc.id desc
+		</if>
+	</select>
+	<select id="getCountOperatorsChannel" resultType="int">
+		select count(1)
+		from ott_operators_channel oc
+		<where>
+			<if test="status !='' and status !=null">
+				oc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and oc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="channelId !='' and channelId !=null">
+				and oc.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="channelName !='' and channelName !=null">
+				and oc.channelName LIKE CONCAT(CONCAT('%', #{channelName}),'%')
+			</if>
+			<if test="areaId !='' and areaId !=null">
+				and oc.areaId = #{areaId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findOperatorsChannelByCond" resultMap="OperatorsChannelMap">
+		select oc.id, oc.areaId,oc.operators, oc.channelId, oc.sequence,
+			oc.createTime,oc.status,oc.playChannelId,oc.isLocal,oc.channelName
+		from ott_operators_channel oc
+		<where>
+			<if test="status !='' and status !=null">
+				oc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and oc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="operatorsName !='' and operatorsName !=null">
+				and oc.operatorsName = #{operatorsName,jdbcType=VARCHAR}
+			</if>
+			<if test="channelId !='' and channelId !=null">
+				and oc.channelId = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="playChannelId !='' and playChannelId !=null">
+				and oc.playChannelId = #{playChannelId,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(c.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+			<if test="isLocal !='' and isLocal !=null">
+				and oc.isLocal = #{isLocal,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by oc.id desc
+		</if>
+	</select>
+	
+	<resultMap id="liveOperatorsChannelMap" type="OperatorsChannel" > 
+		<result property="operators" column="operators"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="playChannelId" column="playChannelId"></result>
+		<result property="singleLiveServer" column="singleLiveServer"></result>
+		<result property="singleLiveServer2" column="singleLiveServer2"></result>
+		<result property="groupLiveServer" column="groupLiveServer"></result>
+		<result property="groupLiveServer2" column="groupLiveServer2"></result>
+		<association property="liveProgram" column="channelId"  select="com.br.ott.client.live.mapper.ProgramsMapper.getLiveProgramsByChannelId"/>  
+	</resultMap>
+	<select id="findLiveChannelByPage" resultMap="liveOperatorsChannelMap">
+		select  pc.operators, pc.channelId, pc.channelName,pc.playChannelId,pc.singleLiveServer,
+			pc.singleLiveServer2,pc.groupLiveServer,pc.groupLiveServer2
+		from ott_operators_channel pc 
+		<where>
+			<if test="status !='' and status !=null">
+				pc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and pc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="isLocal !='' and isLocal !=null">
+				and pc.isLocal = #{isLocal,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(pc.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by pc.playChannelId
+		</if>
+	</select>
+	
+	<select id="getCountLiveChannel" resultType="int">
+		select count(1) from ott_operators_channel pc
+		<where>
+			<if test="status !='' and status !=null">
+				pc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and pc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="isLocal !='' and isLocal !=null">
+				and pc.isLocal = #{isLocal,jdbcType=VARCHAR}
+			</if>
+			<if test="channelList !='' and channelList !=null">
+				and FIND_IN_SET(pc.channelId, #{channelList,jdbcType=VARCHAR})
+			</if>
+		</where>
+	</select>
+		
+	<select id="getOperatorsChannelById" resultType="OperatorsChannel">
+		select oc.*
+		from ott_operators_channel oc
+		where oc.id=#{id, jdbcType=INTEGER}
+	</select>
+	
+	<update id="updateOperatorsChannelStatus">
+		update ott_operators_channel set status =#{status,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<delete id="delOperatorsChannelById">
+		delete from ott_operators_channel where id=#{id, jdbcType=INTEGER}
+	</delete>
+	
+	<delete id="delOperatorsChannelByOperators">
+		delete from ott_operators_channel where operators=#{operators}
+	</delete>
+	
+	<delete id="delOperatorsChannelList">
+		delete from ott_operators_channel where id in
+		 <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+	
+	<select id="findOperatorsChannelByMoreName" resultType="OperatorsChannel">
+		select c.logoUrl,oc.channelId,oc.playChannelId,c.name, oc.channelName,oc.singleLiveServer,
+			oc.singleLiveServer2,oc.groupLiveServer,oc.groupLiveServer2
+		from ott_channel c
+		left outer join ott_operators_channel oc on oc.channelId=c.id 
+		where oc.status='1' and c.status='1'
+			and oc.operators=#{operators,jdbcType=VARCHAR} 
+			and c.name LIKE CONCAT(CONCAT('%', #{channelName}),'%')
+		UNION 
+		select c.logoUrl,oc.channelId,oc.playChannelId,c.name,oc.channelName,oc.singleLiveServer,
+			oc.singleLiveServer2,oc.groupLiveServer,oc.groupLiveServer2
+		from ott_channel c
+			left outer join ott_operators_channel oc on oc.channelId=c.id 
+		where oc.status='1' and c.status='1'
+			and oc.operators=#{operators,jdbcType=VARCHAR} 
+			and c.otherName LIKE CONCAT(CONCAT('%', #{channelName}),'%')
+	</select>
+</mapper>

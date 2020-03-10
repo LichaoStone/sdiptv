@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>灵动TV</title>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <link type="text/css" href="css/base.css" rel="stylesheet" />
+    <link type="text/css" href="css/styles.css" rel="stylesheet" />
+	<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+var imgUrl = "http://www.bruinet.com/share/images/applogo.png";  //注意必须是绝对路径
+var lineLink = "http://www.bruinet.com/share/ldtv.html";   //同样，必须是绝对路径
+var descContent = '我正在使用灵动TV控制家里的电视，可以看直播！看电影！装应用！'; //分享给朋友或朋友圈时的文字简介
+var shareTitle = '灵动TV';  //分享title
+var appid = ''; //apiID，可留空
+
+wx.config({
+    debug: false,
+	appId: "wx00f5d17c4b6814a4",
+	timestamp: '上一步生成的时间戳',
+	nonceStr: '上一步中的字符串',
+	signature: '上一步生成的签名',
+    jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'] 
+});
+
+wx.ready(function(){
+    // 获取“分享到朋友圈”按钮点击状态及自定义分享内容接口
+		wx.onMenuShareTimeline({
+		title: shareTitle, // 分享标题
+		link: lineLink,
+		imgUrl: imgUrl // 分享图标
+    });    // 获取“分享给朋友”按钮点击状态及自定义分享内容接口 
+	wx.onMenuShareAppMessage({
+		title: shareTitle, // 分享标题
+		desc: descContent, // 分享描述
+		link: lineLink,
+		imgUrl: imgUrl, // 分享图标
+		type: 'link' // 分享类型,music、video或link，不填默认为link
+	});
+});
+</script>
+</head>
+<body>
+<div class="content">
+    <div align="center"><br/><br/><br/>
+	<div ><img src="images/applogo.png" width=0 height=0 /></div>
+	<img width="85%" src="images/txt01.png"/><br/><br/><br/><br/><br/><br/><br/><br/>
+	<a href="http://www.bruinet.com/SmartTV.apk">
+	<img width="45%" src="images/btn01.png" />
+	</a>
+	&nbsp; &nbsp;
+	<a href="#">
+	<img width="45%" src="images/btn02.png" /></a>
+    </div>
+</div>
+
+</body>
+</html>

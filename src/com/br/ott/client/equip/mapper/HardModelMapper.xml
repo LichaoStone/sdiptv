@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.equip.mapper.HardModelMapper">
+	<resultMap id="HardModelMap" type="HardModel">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="brandId" property="brandId" jdbcType="VARCHAR" />
+		<result column="brandName" property="brandName" jdbcType="VARCHAR" />
+		<result column="brandCode" property="brandCode" jdbcType="VARCHAR" />
+		<result column="number" property="number" jdbcType="VARCHAR" />
+		<result column="machType" property="machType" jdbcType="VARCHAR" />
+		<result column="systemName" property="systemName" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 添加型号 -->
+	<insert id="addHardModel" parameterType="HardModel">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		INSERT INTO OTT_HARD_MODEL(brandId,number,machType,systemName,sequence,status)
+			VALUES(
+			#{brandId,jdbcType=VARCHAR},
+			#{number,jdbcType=VARCHAR},
+			#{machType,jdbcType=VARCHAR},
+			#{systemName,jdbcType=VARCHAR},
+			#{sequence,jdbcType=VARCHAR},
+			#{status,jdbcType=VARCHAR}
+			) 
+	</insert>
+
+	<!--分页查询所有型号 -->
+	<select id="findHardModelByPage" resultMap="HardModelMap">
+		select m.id,m.brandId,m.number,m.machType,m.systemName,m.status,m.sequence,
+			b.name as brandName ,b.code as brandCode 
+		 from OTT_HARD_MODEL m
+		 left outer join OTT_HARD_BRAND b on b.id=m.brandId
+		<where>
+			<if test="number != null and number != ''">
+				m.number= #{number,jdbcType=VARCHAR}
+			</if>
+			<if test="brandId != null and brandId != ''">
+				and m.brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null and brandCode != ''">
+				and b.code= #{brandCode,jdbcType=VARCHAR}
+			</if>
+			<if test="machType != null and machType != ''">
+				and m.machType= #{machType,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and m.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by m.id desc
+		</if>
+	</select>
+	<select id="getCountHardModel" resultType="int">
+		select count(1)
+		 from OTT_HARD_MODEL m
+		 left outer join OTT_HARD_BRAND b on b.id=m.brandId
+		<where>
+			<if test="number != null and number != ''">
+				m.number= #{number,jdbcType=VARCHAR}
+			</if>
+			<if test="brandId != null and brandId != ''">
+				and m.brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null and brandCode != ''">
+				and b.code= #{brandCode,jdbcType=VARCHAR}
+			</if>
+			<if test="machType != null and machType != ''">
+				and m.machType= #{machType,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and m.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="getHardModelById" resultMap="HardModelMap">
+		<![CDATA[ 
+			select m.id,m.brandId,m.number,m.machType,m.systemName,m.status,m.sequence,
+			(select b.name from OTT_HARD_BRAND b where b.id=m.brandId) as brandName 
+		 from OTT_HARD_MODEL m where m.id=#{id}
+		]]>
+	</select>
+
+	<!-- 修改型号 -->
+	<update id="updateHardModel" parameterType="HardModel">
+		<![CDATA[ UPDATE OTT_HARD_MODEL SET 
+			brandId=#{brandId,jdbcType=VARCHAR},
+			number=#{number,jdbcType=VARCHAR},
+			machType=#{machType,jdbcType=VARCHAR},
+			systemName=#{systemName,jdbcType=VARCHAR},
+			sequence=#{sequence,jdbcType=VARCHAR}
+		 where id=#{id}
+		]]>
+	</update>
+
+	<update id="updateModelStatus" >
+		<![CDATA[ UPDATE OTT_HARD_MODEL SET 
+			status=#{status,jdbcType=VARCHAR}
+		 where id=#{id}
+		]]>
+	</update>
+	
+	<delete id="delHardModelById">
+		delete from OTT_HARD_MODEL where id=#{id}
+	</delete>
+	
+	<select id="findHardModelByCond" resultMap="HardModelMap">
+		select m.id,m.brandId,m.number,m.machType,m.systemName,m.status,m.sequence,
+			b.name as brandName ,b.code as brandCode 
+		 from OTT_HARD_MODEL m
+		 left outer join OTT_HARD_BRAND b on b.id=m.brandId
+		<where>
+			<if test="number != null and number != ''">
+				m.number= #{number,jdbcType=VARCHAR}
+			</if>
+			<if test="brandId != null and brandId != ''">
+				and m.brandId= #{brandId,jdbcType=VARCHAR}
+			</if>
+			<if test="brandCode != null and brandCode != ''">
+				and b.code= #{brandCode,jdbcType=VARCHAR}
+			</if>
+			<if test="machType != null and machType != ''">
+				and m.machType= #{machType,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and m.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by m.id
+		</if>
+	</select>
+	
+	<resultMap id="BrandTypeMap" type="HardModel">
+		<result column="brandId" property="brandId" jdbcType="VARCHAR" />
+		<result column="brandName" property="brandName" jdbcType="VARCHAR" />
+		<result column="brandCode" property="brandCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="findHardModelByType" resultMap="BrandTypeMap">
+		select m.brandId,b.name as brandName,b.code as brandCode 
+		 from OTT_HARD_MODEL m
+		 	left outer join OTT_HARD_BRAND b on b.id=m.brandId
+		 where m.status='1' 
+		 	and m.machType= #{machType,jdbcType=VARCHAR}
+		 group by b.id
+	</select>
+
+	<select id="findRecHardModelByType" resultMap="BrandTypeMap">
+		select m.brandId,b.name as brandName,b.code as brandCode 
+		 from OTT_BRAND_COMMON bc,OTT_HARD_MODEL m
+		 	left outer join OTT_HARD_BRAND b on b.id=m.brandId 
+		 WHERE bc.machType=m.MACHTYPE and m.status='1' 
+		 	and m.brandId=bc.brandId
+			and m.machType= #{machType,jdbcType=VARCHAR} 
+		 group by m.brandId
+		 order by bc.sequence
+	</select>
+</mapper>

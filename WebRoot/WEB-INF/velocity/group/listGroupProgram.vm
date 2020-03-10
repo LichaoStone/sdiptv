@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>list.vm</title>
+    <meta name="content-type" content="text/html; charset=UTF-8">
+<title></title>
+#tagLibs()
+<script>
+$(function() {
+	$('#queryGroupProgram').click(function(e) {
+		initPage();
+		$('#queryForm').submit();
+	});
+});
+</script>
+</head>
+<body>
+<!--  内容列表   -->
+<form id="queryForm" method="get">
+ <table border='0' cellpadding='0' cellspacing='0' height="36">
+    <tr class="search">
+        <td>所属运营商：<select name="operators" id="operators" style="width:120px;" onchange="changeOperators(this, 'groupCode');">
+      					<option value="" >=请选择=</option>
+      					#foreach($o in $olist)
+						<option value="${o.code}" #if (${o.code} == $!{groupProgram.operators}) selected #end>${o.name}</option>
+					#end
+				</select>
+		</td>
+		<td>所属用户组：<select name="groupCode" id="groupCode" style="width:120px;">
+      					<option value="" >=请选择=</option>
+      					#foreach($o in $ugList)
+						<option value="${o.groupCode}" #if (${o.groupCode} == $!{groupProgram.groupCode}) selected #end>${o.groupName}</option>
+					#end
+				</select>
+		</td>
+		<td>
+			<input type="hidden" id="orderColumn" name="orderColumn" value="$!{groupProgram.orderColumn}" />
+            <img id="queryGroupProgram" type="image" src="$!{ctx}/images/button_search.gif"/>
+        </td>
+	</tr>
+</table>
+<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+            <tr bgcolor="#CFCFCF">
+            	<td height="28" colspan="5" style="padding-left:10px;">
+	◆ 用户组推荐节目信息管理 &gt; 用户组推荐节目信息列表
+	</td>
+</tr>
+<tr align="left" bgcolor="#eff2f7" height="30">
+		<td> <a href="javascript:void(0);" onclick="orderBy(this);" name="operators" lastOrderBy="$!{groupProgram.orderColumn}" class="tb_head">所属运营商</a></td>
+		<td> <a href="javascript:void(0);" onclick="orderBy(this);" name="groupCode" lastOrderBy="$!{groupProgram.orderColumn}" class="tb_head">所属用户组</a></td>
+		<td> <a href="javascript:void(0);" onclick="orderBy(this);" name="rprogramId" lastOrderBy="$!{groupProgram.orderColumn}" class="tb_head">节目名称</a></td>
+		<td> <a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{groupProgram.orderColumn}" class="tb_head">状态</a></td>
+		<td>操作</td>
+</tr>
+
+#if ($null.isNull($!groupPrograms) || $!groupPrograms.size()==0)
+	<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+	 <td colspan="5"><h1>暂无相关数据内容</h1></td>
+    </tr>
+#end
+#foreach ($!c in $!groupPrograms)
+<tr align='left' height="30" onMouseMove="javascript:this.bgColor='#FFFFEE';" onMouseOut="javascript:this.bgColor='';">
+			<td>$!{c.operatorsName}</td>
+			<td>$!{c.groupName}</td>
+			<td>$!{c.programName}</td>
+			<td>
+				#if($!{c.status}=='1')
+					启用
+				#else
+					停用
+				#end
+			</td>
+			<td>
+				#if($!{c.status}=='0')
+					<a href="javascript:updateProgramStatus(this, '$!{c.id}', '$!{c.status}');">启用</a> |
+					<a href="javascript:del($!c.id)">删除</a>
+				#elseif($!{c.status}=='1')
+					<a href="javascript:updateProgramStatus(this, '$!{c.id}', '$!{c.status}');">停用</a>
+				#end
+			</td>
+</tr>
+#end
+</table>
+<div height="36" align="right">
+    #pagination($!{groupProgram})
+</div>
+</form>
+</body>
+<script>
+	function del(id){
+		if(confirm('确实要删除此用户组推荐节目吗?')){
+			var url= window.ctx+ '/group/deleteGroupProgramById.do?id='+id;
+			$.post(url, function(feedback) {
+				alert(feedback.message);
+				if(feedback.successful) {
+					window.location.reload();
+				}
+			});
+		}
+	}
+	
+	function updateProgramStatus($this, id, status) {
+		var url = '';
+		if (status == '0') {
+			url = window.ctx + '/group/reverseProgram.do?id=' + id;
+			if (!window.confirm("您确定要启用此用户组推荐节目！")) {
+				return false;
+			}
+		} else if (status == '1') {
+			url = window.ctx + '/group/closeProgram.do?id=' + id;
+			if (!window.confirm("您确定要停用此用户组推荐节目！")) {
+				return false;
+			}
+		}else {
+			return;
+		}
+		$.post(url, function(feedback) {
+			alert(feedback.message);
+			if (feedback.successful) {
+				location.reload();
+			}
+		})
+	}
+	function changeOperators(obj, dom){
+		if (obj.value == '') {
+			jQuery('#' + dom + ' option').remove();
+			jQuery('#' + dom)
+					.append("<option value=''>=\u8bf7\u9009\u62e9=</option>");
+			return;
+		}
+		var param={
+			'operators': obj.value
+		}
+		$.getJSON(window.ctx + "/group/changeUserGroup.do" , param,
+				function(res) {
+					if (res == null) {
+						return;
+					}
+					$('#' + dom + ' option').remove();
+					$('#' + dom).append("<option value=''>=\u8bf7\u9009\u62e9=</option>");
+					$.each(res, function(i,group) {
+						 $("#" + dom).append("<option data='"+group.groupName+"' value='" + group.groupCode
+								 + "'>" + group.groupName+ "</option>");
+					});
+		});
+	}
+</script>
+</html>

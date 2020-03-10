@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.CTypeMapper">
+	<resultMap id="CTypeMap" type="CType" > 
+		<id property="id" column="id"></id>
+		<result property="channelId" column="channelId"></result>
+		<result property="typeId" column="typeId"></result>
+		<result property="typeName" column="typeName"></result>
+		<result property="code" column="code"></result>
+	</resultMap>  
+
+	<insert id="addCType" parameterType="CType">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[ insert into ott_cType(channelId, typeId) 
+			values(#{channelId,jdbcType=VARCHAR},
+				#{typeId,jdbcType=VARCHAR})
+		]]>
+	</insert> 
+	
+	<select id="findCTypeByChannelId" resultMap="CTypeMap">
+		select c.id, c.channelId, c.typeId, t.name as typeName, t.code as code
+		from ott_cType c
+			left outer join ott_channel_type t on t.id=c.typeId
+		where c.channelId=#{channelId,jdbcType=VARCHAR}
+		order by c.id desc
+	</select>
+	
+	<select id="findCTypeByTypeId" resultType="CType">
+		select id, channelId, typeId
+		from ott_cType
+		where typeId=#{typeId,jdbcType=VARCHAR}
+		order by id desc
+	</select>
+	
+	<select id="findCTypeByTypeList" resultType="CType">
+		select id, channelId, typeId
+		from ott_cType
+		where FIND_IN_SET(typeId, #{types,jdbcType=VARCHAR})
+		order by id desc
+	</select>
+	
+	<delete id="delCTypeByChannelId">
+		delete from ott_cType where channelId=#{channelId,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="delCTypeByTypeId">
+		delete from ott_cType where typeId=#{typeId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

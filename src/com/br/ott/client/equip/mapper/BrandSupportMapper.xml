@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.equip.mapper.BrandSupportMapper">
+	<resultMap id="BrandSupportMap" type="BrandSupport">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="logo" property="logo" jdbcType="VARCHAR" />
+		<result column="supportModel" property="supportModel" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 添加品牌 -->
+	<insert id="addBrandSupport" parameterType="BrandSupport">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_BRAND_SUPPORT(name,logo,supportModel,sequence,status)
+				VALUES(
+				#{name,jdbcType=VARCHAR},
+				#{logo,jdbcType=VARCHAR},
+				#{supportModel,jdbcType=VARCHAR},
+				#{sequence},
+				'1'
+				) 
+	</insert>
+
+	<!--分页查询所有品牌 -->
+	<select id="findBrandSupportByPage" resultMap="BrandSupportMap">
+		select * from OTT_BRAND_SUPPORT
+		<where>
+			<if test="name != null and name != ''">
+				name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+	<select id="getCountBrandSupport" resultType="int">
+		select count(1) from OTT_BRAND_SUPPORT
+		<where>
+			<if test="name != null and name != ''">
+				name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="getBrandSupportById" resultMap="BrandSupportMap">
+		<![CDATA[ 
+			select * from OTT_BRAND_SUPPORT where id=#{id}
+		]]>
+	</select>
+
+	<!-- 修改品牌 -->
+	<update id="updateBrandSupport" parameterType="BrandSupport">
+		<![CDATA[ UPDATE OTT_BRAND_SUPPORT SET 
+			name=#{name},
+			logo=#{logo},
+			supportModel=#{supportModel},
+			sequence=#{sequence}
+			where id=#{id}
+		]]>
+	</update>
+	
+	<update id="updateSupportStatus">
+		UPDATE OTT_BRAND_SUPPORT SET status=#{status} where id=#{id}
+	</update>
+	
+	<select id="findBrandSupportByCond" resultMap="BrandSupportMap">
+		select * from OTT_BRAND_SUPPORT
+		<where>
+			<if test="name != null and name != ''">
+				name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by id desc
+		</if>
+	</select>
+</mapper>

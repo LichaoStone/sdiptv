@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.RecProgramMapper">
+	<resultMap id="RecProgramMap" type="RecProgram" > 
+		<id property="id" column="id"></id>
+		<result property="type" column="type"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="cLogoUrl" column="cLogoUrl"></result>
+		<result property="logoUrl" column="logoUrl"></result>
+		<result property="wlogoUrl" column="wlogoUrl"></result>
+		<result property="hlogoUrl" column="hlogoUrl"></result>
+		<result property="indexSearch" column="indexSearch"></result>
+		<result property="createTime" column="createTime"></result>
+		<result property="content" column="content"></result>
+		<result property="sequence" column="sequence"></result>
+		<result property="oldSequence" column="oldSequence"></result>
+		<result property="operators" column="operators"></result>
+		<result property="status" column="status"></result>
+	</resultMap>  
+
+	<insert id="addRecProgram" parameterType="RecProgram">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[ insert into ott_rec_program(type, channelId, logoUrl,wlogoUrl,hlogoUrl,indexSearch,
+			createTime,content,sequence,operators,status) 
+		values(#{type,jdbcType=VARCHAR},
+			#{channelId,jdbcType=VARCHAR},
+			#{logoUrl,jdbcType=VARCHAR},
+			#{wlogoUrl,jdbcType=VARCHAR},
+			#{hlogoUrl,jdbcType=VARCHAR},
+			#{indexSearch,jdbcType=VARCHAR},
+			now(),
+			#{content,jdbcType=VARCHAR},
+			#{sequence,jdbcType=VARCHAR},
+			#{operators,jdbcType=VARCHAR},
+			'1')
+		]]>
+	</insert> 
+	
+	<select id="findRecProgramByPage" resultMap="RecProgramMap">
+		select rc.id, rc.type, rc.channelId, rc.logoUrl,rc.wlogoUrl,rc.hlogoUrl,rc.indexSearch,
+			date_format(rc.createTime,'%Y-%m-%d %H:%i:%s') createTime,rc.status,
+			rc.content,rc.sequence,rc.operators,oc.name as channelName, 
+			oc.logoUrl as cLogoUrl
+		from ott_rec_program rc
+		left outer join ott_channel oc on oc.id=rc.channelId
+		<where>
+		    <if test="channelId !='' and channelId !=null">
+				oc.id = #{channelId,jdbcType=VARCHAR}
+			</if>
+			<if test="status !='' and status !=null">
+				and rc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="type !='' and type !=null">
+				and rc.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and rc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="indexSearch !='' and indexSearch !=null">
+				and rc.indexSearch LIKE CONCAT(CONCAT('%', #{indexSearch}),'%')
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by rc.id desc
+		</if>
+	</select>
+	<select id="getCountRecProgram" resultType="int">
+		select count(1)
+		from ott_rec_program rc
+		left outer join ott_channel oc on oc.id=rc.channelId
+		<where>
+			<if test="status !='' and status !=null">
+				rc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="type !='' and type !=null">
+				and rc.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and rc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+			<if test="indexSearch !='' and indexSearch !=null">
+				and rc.indexSearch LIKE CONCAT(CONCAT('%', #{indexSearch}),'%')
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="RecProMap" type="RecProgram" > 
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="logoUrl" column="logoUrl"></result>
+		<result property="wlogoUrl" column="wlogoUrl"></result>
+		<result property="hlogoUrl" column="hlogoUrl"></result>
+		<result property="pId" column="pId"></result>
+		<result property="pName" column="pName"></result>
+		<result property="playTime" column="playTime"></result>
+		<result property="timeOut" column="timeLongth"></result>
+		<result property="queue" column="queue"></result>
+		<result property="playId" column="playId"></result>
+		<result property="sequence" column="sequence"></result>
+		<result property="indexSearch" column="indexSearch"></result>
+		<result property="localCid" column="localCid"></result>
+		<result property="singleLiveServer" column="singleLiveServer"></result>
+		<result property="singleLiveServer2" column="singleLiveServer2"></result>
+		<result property="groupLiveServer" column="groupLiveServer"></result>
+		<result property="groupLiveServer2" column="groupLiveServer2"></result>
+	</resultMap> 
+		
+	<select id="findRecLProByPage" resultMap="RecProMap">
+		select a.* from (select rc.channelId, rc.logoUrl,rc.wlogoUrl,rc.hlogoUrl,op.name as pName,rc.createTime, 
+			op.id as pid, date_format(op.playTime,'%Y-%m-%d %H:%i') playTime,op.timeLongth,op.queue,op.playId,
+		 	oc.channelName, rc.sequence, rc.indexSearch, oc.singleLiveServer,oc.singleLiveServer2,
+		 	oc.groupLiveServer,oc.groupLiveServer2,oc.playChannelId as localCid
+		from ott_rec_program rc, ott_programs op, ott_operators_channel oc
+		where rc.status='1'
+			and oc.status='1'
+			and oc.channelId=op.channelId 
+			and rc.channelId=oc.channelId
+			and oc.operators=rc.operators
+			and now() BETWEEN op.playTime and DATE_ADD(op.playTime, INTERVAL op.timeLongth MINUTE)
+			and op.name like CONCAT(CONCAT('%', rc.indexSearch ,'%')) 
+			and rc.type= #{type,jdbcType=VARCHAR}
+			and rc.operators= #{operators,jdbcType=VARCHAR}
+		order by rc.sequence,op.playTime) a
+		group by a.indexSearch,a.channelId
+		order by a.sequence, a.playTime
+	</select>
+	
+	<select id="findRecProgramByCond" resultMap="RecProgramMap">
+		select rc.id, rc.type, rc.channelId, rc.logoUrl,rc.wlogoUrl,rc.hlogoUrl,rc.indexSearch,
+			date_format(rc.createTime,'%Y-%m-%d %H:%i:%s') createTime,rc.status,
+			oc.name as channelName,rc.content,rc.sequence,rc.operators
+		from ott_rec_program rc
+		left outer join ott_channel oc on oc.id=rc.channelId
+		<where>
+			<if test="status !='' and status !=null">
+				rc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="type !='' and type !=null">
+				and rc.type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="operators !='' and operators !=null">
+				and rc.operators = #{operators,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by rc.id desc
+		</if>
+	</select>
+	
+	<select id="getRecProgramById" resultType="RecProgram">
+		select * from ott_rec_program where id=#{id, jdbcType=INTEGER}
+	</select>
+	
+	<update id="updateRecProgram">
+		update ott_rec_program set type=#{type,jdbcType=VARCHAR},
+			channelId=#{channelId,jdbcType=VARCHAR},
+			logoUrl=#{logoUrl,jdbcType=VARCHAR},
+			wlogoUrl=#{wlogoUrl,jdbcType=VARCHAR},
+			hlogoUrl=#{hlogoUrl,jdbcType=VARCHAR},
+			indexSearch=#{indexSearch,jdbcType=VARCHAR},
+			content=#{content,jdbcType=VARCHAR},
+			sequence=#{sequence,jdbcType=VARCHAR},
+			operators=#{operators,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<delete id="deleteRecProgramById">
+		delete from ott_rec_program where id=#{id, jdbcType=INTEGER}
+	</delete>
+	
+	<update id="updateRecProgramStatus">
+		update ott_rec_program set status=#{status,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<select id="getMaxSequence" resultType="int">
+		SELECT max(sequence)+1 as sequence FROM ott_rec_program WHERE type=#{type,jdbcType=VARCHAR} and channelId=#{channelId, jdbcType=VARCHAR}
+	</select>
+	
+	<!--大变小，数值+1， 5变为1 -->
+	<update id="updateDNAddSequence">
+		update ott_rec_program set sequence=sequence+1
+		where id= #{id} 
+			and sequence >= #{sequence}
+			<![CDATA[
+				and sequence < #{oldSequence}
+			]]>
+	</update> 
+	
+	<!--小变大，数值-1， 2 变为6 -->
+	<update id="updateDNSubSequence">
+		update ott_rec_program  set sequence=sequence-1
+		where id= #{id} 
+			and sequence > #{oldSequence}
+			<![CDATA[ 
+				and sequence <= #{sequence}
+			]]>	
+	</update>
+	
+	<update id="updateDNSequence">
+		update ott_rec_program set sequence = #{sequence} where id = #{id}
+	</update>
+	
+</mapper>

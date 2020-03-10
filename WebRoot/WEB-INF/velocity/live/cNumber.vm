@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>热门频道信息</title>
+#tagLibs()
+</head>
+<body>
+<form id="form1" name="form1" action="" method="post">
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="border:1px solid #cfcfcf;background:#ffffff;">
+    <tr>
+      <td colspan="2">
+      	<fieldset style="height:100%;">
+				<legend>热门频道信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">干预频道值：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id" name="id" value="$!{id}"/>
+								<input type="text" id="virtualNumber"  name="virtualNumber" value="$!{virtualNumber}" class="text-writer"/>
+							</td>
+						</tr>
+					</table>
+				</fieldset>		
+		</td>
+    </tr>
+   <tr>
+    <td width="17%">&nbsp;</td>
+    <td width="83%">
+		<button type="button" id="saveNumber" class="bt-primary">保存</button>
+		<button type="button" onClick="window.close();" class="bt-secondary">关闭</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/live/cNumber.js"></script>
+</body>
+</html>

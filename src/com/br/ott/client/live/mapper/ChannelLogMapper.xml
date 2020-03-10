@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.ChannelLogMapper">
+	<resultMap id="ChannelLogMap" type="ChannelLog" > 
+		<id property="id" column="id"></id>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="realNumber" column="realNumber"></result>
+		<result property="virtualNumber" column="virtualNumber"></result>
+		<association property="channel" column="channelId"  select="com.br.ott.client.live.mapper.OperatorsChannelMapper.getOperatorsChannelById"/>  
+		
+	</resultMap>  
+
+	<insert id="addChannelLog" parameterType="ChannelLog">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[ insert into ott_channel_log(channelId, channelName, realNumber, virtualNumber) 
+			values(#{channelId,jdbcType=VARCHAR},
+				#{channelName,jdbcType=VARCHAR},
+				#{realNumber,jdbcType=INTEGER},
+				#{virtualNumber,jdbcType=INTEGER})
+		]]>
+	</insert> 
+	
+	<select id="findChannelLogByPage" resultMap="ChannelLogMap">
+		select id, channelId, channelName, realNumber, virtualNumber
+		from ott_channel_log 
+		<where>
+			<if test="channelId !='' and channelId !=null">
+				channelId=#{channelId, jdbcType=VARCHAR}
+			</if>
+			<if test="channelName !='' and channelName !=null">
+				and channelName LIKE CONCAT(CONCAT('%', #{channelName}),'%')
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by realNumber desc
+		</if>
+	</select>
+	<select id="getCountChannelLog" resultType="int">
+		select count(1)
+		from ott_channel_log 
+		<where>
+			<if test="channelId !='' and channelId !=null">
+				channelId=#{channelId, jdbcType=VARCHAR}
+			</if>
+			<if test="channelName !='' and channelName !=null">
+				and channelName LIKE CONCAT(CONCAT('%', #{channelName}),'%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="getChannelLogByChannelId" resultType="ChannelLog">
+		select id, channelId, channelName, realNumber, virtualNumber
+		from ott_channel_log
+		where channelId=#{channelId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateRealNumber">
+		update ott_channel_log set realNumber=realNumber+1 where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateVirtualNumber">
+		update ott_channel_log set virtualNumber=#{virtualNumber, jdbcType=INTEGER} where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<delete id="delHot">
+		delete from ott_channel_log where id =#{id}  
+	</delete>
+	
+	<delete id="delHotList">
+		delete from ott_channel_log where id in
+		 <foreach collection="list" item="ids"  open="(" separator="," close=")">  
+        	#{ids}  
+     	</foreach>
+	</delete>
+</mapper>

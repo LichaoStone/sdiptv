@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.br.ott.client.live.mapper.CityOperatorsMapper">
+	<resultMap id="CityOperatorsMap" type="CityOperators">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="fullName" property="fullName" jdbcType="VARCHAR" />
+		<result column="areaId" property="areaId" jdbcType="VARCHAR" />
+		<result column="areaName" property="areaName" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 添加运营商 -->
+	<insert id="addCityOperators" parameterType="CityOperators">
+		<selectKey resultType="String" keyProperty="id" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+			INSERT INTO OTT_City_OPERATORS(name,status,code,fullName,areaId,sequence,createTime)
+				VALUES(
+				#{name,jdbcType=VARCHAR},
+				#{status,jdbcType=VARCHAR},
+				#{code,jdbcType=VARCHAR},
+				#{fullName,jdbcType=VARCHAR},
+				#{areaId,jdbcType=VARCHAR},
+				#{sequence,jdbcType=VARCHAR},
+				now()
+				) 
+	</insert>
+
+	<!--分页查询运营商 -->
+	<select id="findCityOperatorsByPage" resultMap="CityOperatorsMap">
+		select o.* from OTT_City_OPERATORS o
+		<where>
+			<if test="name != null and name != ''">
+				o.name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="code != null and code != ''">
+				and o.code= #{code,jdbcType=VARCHAR}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				and o.areaId= #{areaId,jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and a.parentId= #{parentId,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and o.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by o.id desc
+		</if>
+	</select>
+	<select id="getCountCityOperators" resultType="int">
+		select count(1) from OTT_City_OPERATORS o
+		<where>
+			<if test="name != null and name != ''">
+				o.name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="code != null and code != ''">
+				and o.code= #{code,jdbcType=VARCHAR}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				and o.areaId= #{areaId,jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and a.parentId= #{parentId,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and o.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getCityOperatorsById" resultMap="CityOperatorsMap">
+		<![CDATA[ 
+			select o.*from OTT_City_OPERATORS o
+			 where o.id=#{id}
+		]]>
+	</select>
+
+	<!-- 修改运营商 -->
+	<update id="updateCityOperators" parameterType="CityOperators">
+		<![CDATA[ UPDATE OTT_CITY_OPERATORS SET 
+				name=#{name,jdbcType=VARCHAR},
+				code=#{code,jdbcType=VARCHAR},
+				fullName=#{fullName,jdbcType=VARCHAR},
+				areaId=#{areaId,jdbcType=VARCHAR},
+				sequence=#{sequence,jdbcType=VARCHAR}
+			where id=#{id}
+		]]>
+	</update>
+
+	<update id="updateCityOperatorsStatus">
+			UPDATE OTT_City_OPERATORS SET 
+				status=#{status,jdbcType=VARCHAR}
+			where id=#{id}
+	</update>
+	
+	<delete id="delCityOperatorsById">
+		delete from OTT_City_OPERATORS where id=#{id}
+	</delete>
+	
+	<select id="findCityOperatorsByCond" resultMap="CityOperatorsMap">
+		select o.* from OTT_City_OPERATORS o
+		<where>
+			<if test="id != null and id != ''">
+				o.id= #{id,jdbcType=INTEGER}
+			</if>
+			<if test="name != null and name != ''">
+				and o.name= #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="code != null and code != ''">
+				and o.code= #{code,jdbcType=VARCHAR}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				and o.areaId= #{areaId,jdbcType=VARCHAR}
+			</if>
+			<if test="areaName != null and areaName != ''">
+				and a.name= #{areaName,jdbcType=VARCHAR}
+			</if>
+			<if test="status !=null and status !=''">
+				and o.status= #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn}
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by o.id desc
+		</if>
+	</select>
+</mapper>

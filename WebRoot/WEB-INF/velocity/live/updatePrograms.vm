@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>抓取频道节目信息</title>
+#tagLibs()
+#calendar()
+</head>
+<body>
+<form id="form1" name="form1" action="" method="post">
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="border:1px solid #cfcfcf;background:#ffffff;">
+    <tr>
+      <td colspan="2">
+				<legend>频道信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">频道名称：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id" name="id" value="$!{channel.id}"/>
+								$!{channel.name}
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">抓取地址：</td>
+							<td class="pn-fcontent">
+								<select id="type" name="type">
+									<option value="tvsou">搜电视</option>
+                                    <option value="cctv">央视</option>
+                                </select>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">开始日期：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="startDate"  name="startDate" readonly onclick="WdatePicker({minDate:'%y-%M-{%d-2}',maxDate:'%y-%M-{%d+2}'})" class="Wdate text-writer"/>
+							</td>
+						</tr>
+						<div id="uploadImg" style="display:none;height:15px; width:15px; margin:15px auto;">
+                            <img src="${ctx}/images/loadinglit.gif"/>
+                         </div>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">抓取天数：</td>
+							<td class="pn-fcontent">
+								<select id="count" name="count">
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+                                </select>开始时间及后N天
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">抓取范围：</td>
+							<td class="pn-fcontent">
+								<input type="radio" id="no_afterNow" name="afterNow" value="0" checked/><label for="no_afterNow">所有时间</label>
+                                <input type="radio" id="yes_afterNow" name="afterNow" value="1" /><label for="yes_afterNow">当前时间后</label>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" class="pn-flabel pn-flabel-h">生成文件：</td>
+							<td class="pn-fcontent">
+								<input type="radio" id="no_create" name="createFile" value="0" checked/><label for="no_create">否</label>
+                                <input type="radio" id="yes_create" name="createFile" value="1" /><label for="yes_create">是</label>
+							</td>
+						</tr>
+						
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td width="17%">&nbsp;</td>
+    <td width="83%">
+		<button type="button" id="saveType" class="bt-primary">保存</button>
+		<button type="button" onClick="window.close();" class="bt-secondary">关闭</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/live/updatePrograms.js"></script>
+</body>
+</html>

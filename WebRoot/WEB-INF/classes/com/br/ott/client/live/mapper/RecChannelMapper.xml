@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.br.ott.client.live.mapper.RecChannelMapper">
+	<resultMap id="RecChannelMap" type="RecChannel" > 
+		<id property="id" column="id"></id>
+		<result property="type" column="type"></result>
+		<result property="operators" column="operators"></result>
+		<result property="channelId" column="channelId"></result>
+		<result property="channelName" column="channelName"></result>
+		<result property="cLogoUrl" column="cLogoUrl"></result>
+		<result property="logoUrl" column="logoUrl"></result>
+		<result property="wlogoUrl" column="wlogoUrl"></result>
+		<result property="hlogoUrl" column="hlogoUrl"></result>
+		<result property="createTime" column="createTime"></result>
+		<result property="content" column="content"></result>
+		<result property="sequence" column="sequence"></result>
+		<result property="oldSequence" column="oldSequence"></result>
+		<result property="status" column="status"></result>
+	</resultMap>  
+
+	<insert id="addRecChannel" parameterType="RecChannel">
+		<selectKey keyProperty="id" resultType="String"  order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+		<![CDATA[ insert into ott_rec_channel(operators,type, channelId, logoUrl,wlogoUrl,hlogoUrl,
+			sequence,content,createTime,status) 
+		values(#{operators,jdbcType=VARCHAR},
+			#{type,jdbcType=VARCHAR},
+			#{channelId,jdbcType=VARCHAR},
+			#{logoUrl,jdbcType=VARCHAR},
+			#{wlogoUrl,jdbcType=VARCHAR},
+			#{hlogoUrl,jdbcType=VARCHAR},
+			#{sequence,jdbcType=VARCHAR},
+			#{content,jdbcType=VARCHAR},
+			now(),
+			'1')
+		]]>
+	</insert> 
+	
+	<select id="findRecChannelByPage" resultMap="RecChannelMap">
+		select rc.id, rc.type, rc.channelId, rc.logoUrl,rc.wlogoUrl,rc.operators,
+			date_format(rc.createTime,'%Y-%m-%d %H:%i:%s') createTime,rc.status,
+			rc.content,rc.sequence,rc.hlogoUrl,oc.name as channelName, 
+			oc.logoUrl as cLogoUrl
+		from ott_rec_channel rc
+		left outer join ott_channel oc on oc.id=rc.channelId
+		<where>
+			<if test="status !='' and status !=null">
+				rc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="type !='' and type !=null">
+				and rc.type = #{type,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by rc.id desc
+		</if>
+	</select>
+	<select id="getCountRecChannel" resultType="int">
+		select count(1)
+		from ott_rec_channel rc
+		left outer join ott_channel oc on oc.id=rc.channelId
+		<where>
+			<if test="status !='' and status !=null">
+				rc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="type !='' and type !=null">
+				and rc.type = #{type,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findRecChannelByCond" resultMap="RecChannelMap">
+		select rc.id, rc.type, rc.channelId, rc.logoUrl,rc.wlogoUrl,rc.operators,
+			date_format(rc.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+			oc.name as channelName, oc.logoUrl as cLogoUrl,
+			rc.content,rc.sequence,rc.hlogoUrl
+		from ott_rec_channel rc
+		left outer join ott_channel oc on oc.id=rc.channelId
+		<where>
+			<if test="status !='' and status !=null">
+				rc.status = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="type !='' and type !=null">
+				and rc.type = #{type,jdbcType=VARCHAR}
+			</if>
+		</where>
+		<if test="orderColumn != null and orderColumn !=''">
+			order by ${orderColumn} 
+		</if>
+		<if test="orderColumn == null or orderColumn ==''">
+			order by rc.id desc
+		</if>
+	</select>
+	
+	<select id="getRecChannelById" resultType="RecChannel">
+		select * from ott_rec_channel where id=#{id, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getMaxSequence" resultType="int">
+	    select MAX(sequence)+1 as sequence FROM ott_rec_channel where type=#{type, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateRecChannel">
+		update ott_rec_channel set type=#{type,jdbcType=VARCHAR},
+			channelId=#{channelId,jdbcType=VARCHAR},
+			operators=#{operators,jdbcType=VARCHAR},
+			logoUrl=#{logoUrl,jdbcType=VARCHAR},
+			wlogoUrl=#{wlogoUrl,jdbcType=VARCHAR},
+			hlogoUrl=#{hlogoUrl,jdbcType=VARCHAR},
+			content=#{content,jdbcType=VARCHAR},
+			sequence=#{sequence,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<delete id="deleteRecChannelById">
+		delete from ott_rec_channel where id=#{id, jdbcType=INTEGER}
+	</delete>
+	
+	<update id="updateRecChannelStatus">
+		update ott_rec_channel set status=#{status,jdbcType=VARCHAR}
+		where id=#{id, jdbcType=INTEGER}
+	</update>
+	
+	<!--大变小，数值+1， 5变为1 -->
+	<update id="updateDNAddSequence">
+		update ott_rec_channel set sequence=sequence+1
+		where id= #{id} 
+			and sequence >= #{sequence}
+			<![CDATA[
+				and sequence < #{oldSequence}
+			]]>
+	</update> 
+	
+	<!--小变大，数值-1， 2 变为6 -->
+	<update id="updateDNSubSequence">
+		update ott_rec_channel  set sequence=sequence-1
+		where id= #{id} 
+			and sequence > #{oldSequence}
+			<![CDATA[ 
+				and sequence <= #{sequence}
+			]]>	
+	</update>
+	
+	<update id="updateDNSequence">
+		update ott_rec_channel set sequence = #{sequence} where id = #{id}
+	</update>
+</mapper>

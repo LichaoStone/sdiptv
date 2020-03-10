@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>区域管理</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+#tagLibs()
+</head>
+<body>
+	<!--  快速转换位置按钮  -->
+	<div class="topline">
+    	<a href="#" class="xzbtn" style="color:#FFFFFF">区域列表</a> | 
+        <a href="${ctx}/equip/toArea.do" class="wxbtn">新增区域</a>
+	</div>
+	<form name="queryForm" id="queryForm" >
+	<!--  搜索表单  -->
+		<table border='0' cellpadding='0' cellspacing='0' style="margin-top:8px;">
+			<tr class="search">
+				<td>区域名称：<input type='text' name='name' value="$!{area.name}"/>
+				</td>
+				<td>所属区域：
+					<select id="parentId" name="parentId" style="margin:2px 2px;width:120px">
+						<option value="" >=请选择=</option>
+       					#foreach($a in $areas)
+							<option value="${a.id}" #if (${a.id} == $!{area.parentId}) selected #end>${a.name}</option>
+						#end
+					</select>
+				</td>
+				<input type='hidden' id='orderColumn' name="orderColumn" value='$!{area.orderColumn}'/>
+				<td><input id="queryArea" type="image" src="${ctx}/images/button_search.gif"/></td>
+			</tr>
+		</table>
+		<!--  内容列表   -->
+		<table id="list-table" width="100%" border="0" cellpadding='0' cellspacing='0' style="margin-top:10px;">
+			<tr bgcolor="#CFCFCF">
+				<td height="28" colspan="5" style="padding-left:8px;">
+					◆ 区域 &gt; 区域列表
+				</td>
+			</tr>
+			<tr align="left" bgcolor="#eff2f7" height="30">
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="name" lastOrderBy="$!{area.orderColumn}" class="tb_head">区域名称</a></td>
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="parentId" lastOrderBy="$!{area.orderColumn}" class="tb_head">所属区域</a></td>
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="isCapital" lastOrderBy="$!{area.orderColumn}" class="tb_head">省会城市</a></td>
+				<td width="15%"><a href="javascript:void(0);" onclick="orderBy(this);" name="status" lastOrderBy="$!{area.orderColumn}" class="tb_head">状态</a></td>
+				<td width="15%">操作</td>
+			</tr>
+    		#if ($null.isNull($list) || $list.size()==0)
+    			<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    			 <td colspan="5"><h1>暂无相关数据内容</h1></td>
+    		    </tr>
+    		#end
+			#foreach ($type in $list)
+				<tr align='left' height="30"  onMouseMove="javascript:this.bgColor='#FCFDEE';" onMouseOut="javascript:this.bgColor='';">
+    				<td>$!{type.name}</td>
+    				<td>$!{type.parentName}</td> 
+					<td>#if($!{type.isCapital} == '1') 是  #else 否 #end</td>
+    				<td>#if($!{type.status} == '1') 启用  #elseif ($!{type.status} == '0')停用 #end</td>
+    				<td>
+						<a href="${ctx}/equip/toArea.do?id=$!{type.id}">修改</a> |
+						<!--
+						<a href="${ctx}/equip/findOperators.do?areaId=$!{type.id}">运营商</a> |
+						-->
+						#if($!{type.status}=='0')
+							<a href="javascript:updateAreaStatus(this, '$!{type.id}', '$!{type.status}');">启用</a> 
+                		#else
+							<a href="javascript:updateAreaStatus(this, '$!{type.id}', '$!{type.status}');">停用</a>
+                		#end
+    				</td>
+    			</tr>
+             #end
+    	</table>
+    	<div height="36" align="right">
+            #pagination(${area})
+        </div>
+</form>
+<table width="100%" border="0" cellpadding="2" cellspacing="1" bgcolor="#CFCFCF" align="center" style="margin-top:8px">
+    <tr bgcolor="#ffffff">
+    	<td> 
+             &nbsp;批量导入： 
+    		 <input type="file" id="fileArea" name="fileArea" class="text-writer9" onChange="checkFile(this,this.value)"/>
+			 <button type="button" id="inputExcel" class="bt-primary" style="margin-left:3px;">导入</button>
+			<a href="${ctx}/file/area.xls" target="_balnk" class="wxbtn">下载模板</a>
+        </td>
+    </tr>
+</table>
+<div id="uploadImg" style="display:none; height:40px; width:40px; margin:30px auto;">
+	<img src="${ctx}/images/loadinglit.gif" style="width:30px; height:30px;"/>
+</div>
+<script type="text/javascript" src="${ctx}/js/jquery/ajaxfileupload.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/equip/listArea.js"></script>
+	</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>频道信息</title>
+#tagLibs()
+</head>
+<body>
+<form id="form1" name="form1" action="" method="post" enctype="multipart/form-data">
+  <table width="98%"  border="0" align="center" cellpadding="2" cellspacing="2" style="border:1px solid #cfcfcf;background:#ffffff;">
+    <tr>
+      <td colspan="2">
+				<legend>频道信息</legend>
+					<table width="98%" class="pn-ftable" cellpadding="2" cellspacing="1" border="0">
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">频道名称：</td>
+							<td class="pn-fcontent">
+								<input type="hidden" id="id" name="id" value="$!{channel.id}"/>
+								<input type="hidden" id="oldName" name="oldName" value="$!{channel.name}"/>
+								<input type="text" id="name"  name="name" value="$!{channel.name}" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">所属电视台：</td>
+							<td class="pn-fcontent">
+								<select id="areaId" name="areaId" style="width:140px;" onchange="changeChannel(this, 'parentId');">
+									<option value="0" #if(0==$!{channel.parentId}) selected #end>请选择</option>
+    								#foreach($c in $!channels)
+    									<option value="$!{c.id}" #if($!{c.id}==$!{channel.areaId}) selected #end>$!{c.name}</option>	
+    								#end
+                                </select>
+								<select id="parentId" name="parentId" style="width:140px;">
+									#if ($!{channel.parentId} !=''&& $!{channel.parentId}) 
+	    								#foreach($c in $!csList)
+	    									<option value="$!{c.id}" #if($!{c.id}==$!{channel.parentId}) selected #end>$!{c.name}</option>	
+	    								#end
+	    							#else
+	    								<option value="0" #if(0==$!{channel.parentId}) selected #end>请选择</option>
+	    								#foreach($c in $!channels)
+	    									<option value="$!{c.id}" #if($!{c.id}==$!{channel.parentId}) selected #end>$!{c.name}</option>	
+	    								#end
+	    							#end
+                                </select>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">频道别名：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="otherName"  name="otherName" value="$!{channel.otherName}" style="width:320px;" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">CCTV节目源：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="cctvRel"  name="cctvRel" value="$!{channel.cctvRel}" style="width:320px;" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">TV搜节目源：</td>
+							<td class="pn-fcontent">
+								<input type="text" id="tvsouRel"  name="tvsouRel" value="$!{channel.tvsouRel}" style="width:320px;" class="text-writer"/>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">频道LOGO(手机)：</td>
+							<td class="pn-fcontent">
+								<div id="preview">
+									#if(!${channel.logoUrl}||$!{channel.logoUrl}=="")
+										<img id="imghead" style="width:230px;height:200px;border:1px;" alt="频道LOGO" src="${ctx}/images/nopic.gif">
+									#else
+										<img id="imghead" style="width:230px;height:200px;border:1px;" alt="频道LOGO" src="${sourceUrl}$!{channel.logoUrl}">
+									#end
+								</div>
+							   <input type="hidden" id="logoUrl"  name="logoUrl" value="$!{channel.logoUrl}"/>
+								<input type="file" id="logoFile"  name="logoFile" class="text-writer9"/>
+								<button type="button" id="saveLogoImg" style="width:100px;" class="bt-primary">上传</button>
+							</td>
+							<div id="uploadImg" style="display:none;height:15px; width:15px; margin:15px auto;">
+                        			<img src="${ctx}/images/loadinglit.gif"/>
+                        	</div>
+                            <em id="top-message" class="top-message" style="display:none;margin-top:20px;"></em>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">频道LOGO(TV)：</td>
+							<td class="pn-fcontent">
+								<div id="preview2">
+									#if(!${channel.logoUrl2}||$!{channel.logoUrl2}=="")
+										<img id="imghead2" style="width:230px;height:200px;border:1px;" alt="频道LOGO" src="${ctx}/images/nopic.gif">
+									#else
+										<img id="imghead2" style="width:230px;height:200px;border:1px;" alt="频道LOGO" src="${sourceUrl}$!{channel.logoUrl2}">
+									#end
+								</div>
+							   <input type="hidden" id="logoUrl2"  name="logoUrl2" value="$!{channel.logoUrl2}"/>
+								<input type="file" id="logoFile2"  name="logoFile2" class="text-writer9"/>
+								<button type="button" id="saveDescImg" style="width:100px;" class="bt-primary">上传</button>
+							</td>
+						</tr>
+						<tr>
+							<td width="10%" class="pn-flabel pn-flabel-h">频道说明：</td>
+							<td class="pn-fcontent">
+								<textarea id="remark"  name="remark" rows="7" cols="50" style="width:98%">$!{channel.remark}</textarea>
+							</td>
+						</tr>
+					</table>
+		</td>
+    </tr>
+   <tr>
+    <td width="17%">&nbsp;</td>
+    <td width="83%">
+		<button type="button" id="saveChannel" class="bt-primary">保存</button>
+		<button type="button" onClick="history.go(-1);" class="bt-secondary">返回</button>
+    </td>
+   </tr>
+</table>
+</form>
+	<script type="text/javascript" src="${ctx}/js/jquery/ajaxfileupload.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery/validate/validate-tip.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/uploadPreview.js"></script>
+	<script type="text/javascript" src="${ctx}/js/ott/live/channelInfo.js"></script>
+</body>
+</html>
